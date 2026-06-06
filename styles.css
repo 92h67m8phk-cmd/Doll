@@ -1415,6 +1415,25 @@ select:focus {
   max-width: 36rem;
 }
 
+.online-memory {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0.15rem 0 0.45rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid #ededed;
+  border-radius: 999px;
+  background: #f8f8f8;
+  color: #777;
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.online-memory.online {
+  border-color: #dcefe2;
+  background: #f2fbf5;
+  color: #477152;
+}
+
 .thread-composer {
   display: grid;
   gap: 0.8rem;

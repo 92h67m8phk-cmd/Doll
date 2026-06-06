@@ -1,5 +1,7 @@
 const STORE_KEY = "dollshelf-mvp-state-v1";
 const HERO_IMAGE = "./assets/collector-shelf.png";
+const SUPABASE_URL = "https://aqpmkmlrukvwmqmctqxw.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_v5BirRwb1zU_GPuKriW7gQ_8UwzEWZ-";
 
 const INTERESTS = [
   "Barbie",
@@ -224,6 +226,8 @@ let createCropDrag = null;
 const DEFAULT_CROP = { x: 50, y: 50, scale: 1 };
 let lastMobileNavIndex = null;
 let didInitialRender = false;
+let remoteDiscussionsLoaded = false;
+let remoteDiscussionsError = "";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -274,6 +278,151 @@ function findPost(id) {
 
 function findDiscussion(id) {
   return state.discussions.find((discussion) => discussion.id === id);
+}
+
+function supabaseHeaders(extra = {}) {
+  return {
+    apikey: SUPABASE_PUBLISHABLE_KEY,
+    Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+    "Content-Type": "application/json",
+    ...extra,
+  };
+}
+
+async function supabaseRequest(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: supabaseHeaders(options.headers),
+  });
+  if (!response.ok) {
+    let message = `${response.status} ${response.statusText}`;
+    try {
+      const error = await response.json();
+      message = error.message || error.error || message;
+    } catch {}
+    throw new Error(message);
+  }
+  if (response.status === 204) return null;
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function authorSnapshot(user) {
+  return {
+    authorNickname: user?.nickname || "Користувач",
+    authorAvatar: user?.avatar || "",
+  };
+}
+
+function discussionAuthor(discussion) {
+  return (
+    findUser(discussion.userId) || {
+      nickname: discussion.authorNickname || "Користувач",
+      name: discussion.authorNickname || "Користувач",
+      avatar: discussion.authorAvatar || "",
+    }
+  );
+}
+
+function discussionReplyAuthor(reply) {
+  return (
+    findUser(reply.userId) || {
+      nickname: reply.authorNickname || "Користувач",
+      name: reply.authorNickname || "Користувач",
+      avatar: reply.authorAvatar || "",
+    }
+  );
+}
+
+function discussionToRemoteRow(discussion) {
+  return {
+    id: discussion.id,
+    user_id: discussion.userId,
+    author_nickname: discussion.authorNickname || discussionAuthor(discussion).nickname,
+    author_avatar: discussion.authorAvatar || "",
+    title: discussion.title,
+    body: discussion.text,
+    tags: discussion.tags || [],
+    likes: discussion.likes || [],
+    created_at: discussion.createdAt,
+  };
+}
+
+function replyToRemoteRow(reply, discussionId) {
+  return {
+    id: reply.id,
+    discussion_id: discussionId,
+    user_id: reply.userId,
+    author_nickname: reply.authorNickname || discussionReplyAuthor(reply).nickname,
+    author_avatar: reply.authorAvatar || "",
+    body: reply.text,
+    created_at: reply.createdAt,
+  };
+}
+
+function discussionFromRemoteRow(row) {
+  const replies = row.discussion_replies || [];
+  return {
+    id: row.id,
+    userId: row.user_id,
+    authorNickname: row.author_nickname || "Користувач",
+    authorAvatar: row.author_avatar || "",
+    title: row.title,
+    text: row.body,
+    tags: row.tags || [],
+    likes: row.likes || [],
+    createdAt: row.created_at,
+    replies: replies
+      .map((reply) => ({
+        id: reply.id,
+        userId: reply.user_id,
+        authorNickname: reply.author_nickname || "Користувач",
+        authorAvatar: reply.author_avatar || "",
+        text: reply.body,
+        createdAt: reply.created_at,
+      }))
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)),
+  };
+}
+
+async function loadRemoteDiscussions() {
+  try {
+    const rows = await supabaseRequest("discussions?select=*,discussion_replies(*)&order=created_at.desc");
+    if (Array.isArray(rows)) {
+      state.discussions = rows.map(discussionFromRemoteRow);
+      saveState();
+      remoteDiscussionsLoaded = true;
+      remoteDiscussionsError = "";
+    }
+  } catch (error) {
+    remoteDiscussionsLoaded = false;
+    remoteDiscussionsError = error.message || "Не вдалося підключити онлайн-памʼять.";
+    console.warn("Supabase discussions are not ready yet:", error);
+  }
+}
+
+async function saveRemoteDiscussion(discussion) {
+  return supabaseRequest("discussions?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify([discussionToRemoteRow(discussion)]),
+  });
+}
+
+async function saveRemoteReply(reply, discussionId) {
+  return supabaseRequest("discussion_replies?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify([replyToRemoteRow(reply, discussionId)]),
+  });
+}
+
+async function saveRemoteDiscussionLikes(discussion) {
+  return supabaseRequest(`discussions?id=eq.${encodeURIComponent(discussion.id)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ likes: discussion.likes || [] }),
+  });
 }
 
 function initials(user) {
@@ -1095,7 +1244,7 @@ function renderSearch() {
     .filter((discussion) => !findUser(discussion.userId)?.blocked)
     .filter((discussion) => {
       if (!query) return true;
-      const author = findUser(discussion.userId);
+      const author = discussionAuthor(discussion);
       return [
         discussion.title,
         discussion.text,
@@ -1128,6 +1277,11 @@ function renderSearch() {
         <span class="eyebrow">Обсуждения</span>
         <h2>Лента веток кукольного клуба</h2>
         <p>Новости, релизы, вопросы по кастомам и находки сообщества в одном месте.</p>
+        ${
+          remoteDiscussionsLoaded
+            ? `<p class="online-memory online">Онлайн-память подключена.</p>`
+            : `<p class="online-memory">Онлайн-память пока ждёт таблицы в Supabase.</p>`
+        }
       </div>
 
       ${
@@ -1167,7 +1321,7 @@ function renderSearch() {
 }
 
 function renderDiscussionCard(discussion) {
-  const author = findUser(discussion.userId);
+  const author = discussionAuthor(discussion);
   const me = currentUser();
   const liked = me ? discussion.likes.includes(me.id) : false;
   const replies = discussion.replies || [];
@@ -1201,7 +1355,7 @@ function renderDiscussionCard(discussion) {
             replies.length
               ? replies
                   .map((reply) => {
-                    const replyAuthor = findUser(reply.userId);
+                    const replyAuthor = discussionReplyAuthor(reply);
                     return `
                       <div class="thread-reply">
                         ${avatar(replyAuthor, "small")}
@@ -1855,7 +2009,7 @@ function addComment(event, postId) {
   render();
 }
 
-function createDiscussion(event) {
+async function createDiscussion(event) {
   event.preventDefault();
   const me = currentUser();
   if (!me) return;
@@ -1867,38 +2021,58 @@ function createDiscussion(event) {
     .map((tag) => tag.trim())
     .filter(Boolean);
   if (!title || !text) return;
-  state.discussions.unshift({
+  const discussion = {
     id: `d-${Date.now()}`,
     userId: me.id,
+    ...authorSnapshot(me),
     title,
     text,
     tags,
     createdAt: new Date().toISOString(),
     likes: [],
     replies: [],
-  });
+  };
+  state.discussions.unshift(discussion);
   saveState();
   routeTo("#/search");
+  try {
+    await saveRemoteDiscussion(discussion);
+    await loadRemoteDiscussions();
+    render();
+  } catch (error) {
+    remoteDiscussionsError = error.message || "Не вдалося зберегти ветку онлайн.";
+    console.warn("Could not save discussion online:", error);
+  }
 }
 
-function addDiscussionReply(event, discussionId) {
+async function addDiscussionReply(event, discussionId) {
   event.preventDefault();
   const me = currentUser();
   const discussion = findDiscussion(discussionId);
   if (!me || !discussion) return;
   const text = String(new FormData(event.currentTarget).get("reply") || "").trim();
   if (!text) return;
-  discussion.replies.push({
+  const reply = {
     id: `r-${Date.now()}`,
     userId: me.id,
+    ...authorSnapshot(me),
     text,
     createdAt: new Date().toISOString(),
-  });
+  };
+  discussion.replies.push(reply);
   saveState();
   render();
+  try {
+    await saveRemoteReply(reply, discussionId);
+    await loadRemoteDiscussions();
+    render();
+  } catch (error) {
+    remoteDiscussionsError = error.message || "Не вдалося зберегти відповідь онлайн.";
+    console.warn("Could not save reply online:", error);
+  }
 }
 
-function toggleDiscussionLike(discussionId) {
+async function toggleDiscussionLike(discussionId) {
   const me = currentUser();
   const discussion = findDiscussion(discussionId);
   if (!me || !discussion) return;
@@ -1907,6 +2081,12 @@ function toggleDiscussionLike(discussionId) {
     : [...discussion.likes, me.id];
   saveState();
   render();
+  try {
+    await saveRemoteDiscussionLikes(discussion);
+  } catch (error) {
+    remoteDiscussionsError = error.message || "Не вдалося зберегти лайк онлайн.";
+    console.warn("Could not save like online:", error);
+  }
 }
 
 function deleteComment(postId, commentId) {
@@ -2097,5 +2277,10 @@ function renderWithTransition() {
   document.startViewTransition(() => render());
 }
 
+async function initializeApp() {
+  await loadRemoteDiscussions();
+  renderWithTransition();
+}
+
 window.addEventListener("hashchange", renderWithTransition);
-window.addEventListener("DOMContentLoaded", renderWithTransition);
+window.addEventListener("DOMContentLoaded", initializeApp);
