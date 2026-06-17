@@ -847,7 +847,6 @@ function renderPostCard(post) {
       <div class="post-body">
         ${kindLabel}
         <p>${escapeHtml(post.text)}</p>
-        ${tagList(post.tags)}
       </div>
       <div class="post-actions">
         <div>
