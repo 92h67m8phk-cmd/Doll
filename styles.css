@@ -209,6 +209,63 @@ a {
   color: var(--ink);
 }
 
+.like-button {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.78rem;
+  border: 1px solid #efc8d8;
+  border-radius: 999px;
+  background: #fff7fb;
+  color: #8f6478;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 780;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.like-button:hover {
+  transform: translateY(-1px);
+  border-color: #eca6c8;
+  box-shadow: 0 10px 22px rgba(223, 118, 164, 0.18);
+  color: #d95090;
+}
+
+.like-button:focus-visible {
+  outline: 2px solid rgba(217, 80, 144, 0.28);
+  outline-offset: 2px;
+}
+
+.like-button.liked {
+  border-color: #ef9dc3;
+  background: linear-gradient(135deg, #ffe8f2, #ffd9ea);
+  color: #df4f93;
+  box-shadow:
+    0 0 0 1px rgba(239, 157, 195, 0.22),
+    0 12px 24px rgba(223, 79, 147, 0.18);
+}
+
+.like-button__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.like-button.liked .like-button__icon {
+  text-shadow: 0 0 12px rgba(223, 79, 147, 0.5);
+}
+
+.like-button__count {
+  min-width: 0.65rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .main {
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;

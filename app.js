@@ -641,6 +641,21 @@ function renderShell(content) {
   `;
 }
 
+function renderLikeButton({ liked, count, onclick, label }) {
+  return `
+    <button
+      class="like-button ${liked ? "liked" : ""}"
+      type="button"
+      onclick="${onclick}"
+      aria-pressed="${liked ? "true" : "false"}"
+      aria-label="${escapeHtml(label)}"
+    >
+      <span class="like-button__icon" aria-hidden="true">${liked ? "♥" : "♡"}</span>
+      <span class="like-button__count">${count}</span>
+    </button>
+  `;
+}
+
 function renderWelcome() {
   const members = visibleUsers().slice(0, 3);
   return `
@@ -829,10 +844,14 @@ function renderPostCard(post) {
       </div>
       <div class="post-actions">
         <div>
-          <button class="ghost-button small" onclick="App.toggleLike('${post.id}')">${liked ? "Прибрати лайк" : "Лайк"}</button>
+          ${renderLikeButton({
+            liked,
+            count: post.likes.length,
+            onclick: `App.toggleLike('${post.id}')`,
+            label: liked ? "Прибрати вподобання" : "Поставити вподобання",
+          })}
           <a class="ghost-button small" href="#/post/${post.id}">Коментарі: ${post.comments.length}</a>
         </div>
-        <span class="muted">${post.likes.length} вподобань</span>
       </div>
     </article>
   `;
@@ -1341,8 +1360,12 @@ function renderDiscussionCard(discussion) {
           ${tagList(discussion.tags || [])}
         </div>
         <div class="thread-actions">
-          <button class="ghost-button small" onclick="App.toggleDiscussionLike('${discussion.id}')">${liked ? "Убрать лайк" : "Лайк"}</button>
-          <span class="muted">${discussion.likes.length} лайков</span>
+          ${renderLikeButton({
+            liked,
+            count: discussion.likes.length,
+            onclick: `App.toggleDiscussionLike('${discussion.id}')`,
+            label: liked ? "Убрать лайк" : "Поставить лайк",
+          })}
         </div>
       </div>
       <details class="thread-comments">
