@@ -27,170 +27,182 @@ const AESTHETICS = [
   "minimal",
 ];
 
-const TOY_TAG_DICTIONARY = {
-  brands: [
-    "Barbie",
-    "Monster High",
-    "Ever After High",
-    "Bratz",
-    "Bratzillaz",
-    "Rainbow High",
-    "Shadow High",
-    "Pullip",
-    "Blythe",
-    "BJD",
-    "LOL OMG",
-    "My Scene",
-    "Enchantimals",
-  ],
-  characters: [
-    'Barbie "Malibu" Roberts',
-    'Barbie "Brooklyn" Roberts',
-    "Ken",
-    "Skipper",
-    "Chelsea",
-    "Stacie",
-    "Teresa",
-    "Christie",
-    "Midge",
-    "Raquelle",
-    "Frankie Stein",
-    "Draculaura",
-    "Clawdeen Wolf",
-    "Cleo de Nile",
-    "Lagoona Blue",
-    "Ghoulia Yelps",
-    "Abbey Bominable",
-    "Deuce Gorgon",
-    "Venus McFlytrap",
-    "Toralei Stripe",
-    "Spectra Vondergeist",
-    "Operetta",
-    "Robecca Steam",
-    "Twyla",
-    "Catty Noir",
-    "Apple White",
-    "Raven Queen",
-    "Briar Beauty",
-    "Ashlynn Ella",
-    "Cerise Hood",
-    "Darling Charming",
-    "Kitty Cheshire",
-    "Madeline Hatter",
-    "Lizzie Hearts",
-    "Rosabella Beauty",
-    "Cedar Wood",
-    "Holly O'Hair",
-    "Poppy O'Hair",
-    "Ruby Anderson",
-    "Poppy Rowan",
-    "Sunny Madison",
-    "Jade Hunter",
-    "Skyler Bradshaw",
-    "Violet Willow",
-    "Avery Styles",
-    "Stella Monroe",
-    "Bella Parker",
-    "Karma Nichols",
-    "River Kendall",
-    "Krystal Bailey",
-    "Amaya Raine",
-    "Daria Roselyn",
-    "Georgia Bloom",
-    "Sheryl Meyer",
-    "Daphne Minton",
-    "Gabriella Icely",
-    "Emi Vanda",
-    "Mila Berrymore",
-    "Meena Fleur",
-    "Delilah Fields",
-    "Jewel Richie",
-    "Coco Vanderbalt",
-    "Lila Yamamoto",
-    "Victoria Whitman",
-    "Priscilla Perez",
-    "Michelle St. Charles",
-    "Olivia Woods",
-    "Kim Nguyen",
-    "Aidan Russell",
-    "Holly De'Vious",
-    "Laurel De'Vious",
-    "Jett Dawson",
-    "Shanelle Onyx",
-    "Natasha Zima",
-    "Heather Grayson",
-    "Luna Madison",
-    "Zooey Electra",
-    "Cloe",
-    "Yasmin",
-    "Jade",
-    "Sasha",
-    "Meygan",
-    "Raya",
-    "Nevra",
-    "Kumi",
-    "Fianna",
-    "Dana",
-    "Pullip",
-    "Taeyang",
-    "Dal",
-    "Byul",
-    "Isul",
-    "Yeolume",
-    "Namu",
-  ],
-  collections: [
-    "Fashionistas",
-    "Dreamhouse Adventures",
-    "Generation Girl",
-    "Happy Family",
-    "I Can Be",
-    "Kelly Club",
-    "So In Style",
-    "Haunt Couture",
-    "Boo-riginal Creeproductions",
-    "Creeproductions",
-    "Skullector",
-    "Monster Fest",
-    "Series 1",
-    "Series 2",
-    "Series 3",
-    "Series 4",
-    "Series 5",
-    "Junior High",
-    "Pacific Coast",
-    "Rainbow Vision",
-    "Fantastic Fashion",
-    "Costume Ball",
-    "Littles",
-    "Shadow High Series 1",
-    "Shadow High Series 2",
-    "Shadow High Series 3",
-    "Rock Angelz",
-    "Pretty 'N' Punk",
-    "Girls Nite Out",
-    "Formal Funk",
-    "Tokyo A Go-Go",
-    "Treasures",
-    "Alwayz Bratz",
-    "Bratz Babyz",
-    "Bratz Kidz",
-    "Bratz Boyz",
-    "Bratz Collector",
-    "Another Alice",
-    "Rozen Maiden",
-    "Little Pullip",
-    "Neo Blythe",
-    "Middie Blythe",
-    "Petite Blythe",
-  ],
-};
+function compactTagValue(value = "") {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
 
-const POST_TAG_CATALOG = [
-  ...TOY_TAG_DICTIONARY.brands,
-  ...TOY_TAG_DICTIONARY.characters,
-  ...TOY_TAG_DICTIONARY.collections,
+function buildToyTag(type, canonical, ru, uk, aliases = []) {
+  const labels = {
+    en: canonical,
+    ru: ru || canonical,
+    uk: uk || ru || canonical,
+  };
+  const searchable = [...new Set([canonical, labels.ru, labels.uk, ...aliases].map(compactTagValue).filter(Boolean))];
+  return { type, canonical, labels, aliases: searchable };
+}
+
+const TOY_BRANDS = [
+  buildToyTag("brand", "Barbie", "Барби", "Барбі"),
+  buildToyTag("brand", "Monster High", "Монстер Хай", "Монстер Хай"),
+  buildToyTag("brand", "Ever After High", "Эвер Афтер Хай", "Евер Афтер Хай"),
+  buildToyTag("brand", "Bratz", "Братц", "Братц"),
+  buildToyTag("brand", "Bratzillaz", "Братзиллаз", "Братзіллаз"),
+  buildToyTag("brand", "Rainbow High", "Рейнбоу Хай", "Рейнбоу Хай"),
+  buildToyTag("brand", "Shadow High", "Шэдоу Хай", "Шедоу Хай"),
+  buildToyTag("brand", "Pullip", "Пуллип", "Пулліп"),
+  buildToyTag("brand", "Blythe", "Блайз", "Блайз"),
+  buildToyTag("brand", "BJD", "БЖД", "БЖД"),
+  buildToyTag("brand", "LOL OMG", "ЛОЛ ОМГ", "ЛОЛ ОМГ"),
+  buildToyTag("brand", "My Scene", "Май Син", "Май Сін"),
+  buildToyTag("brand", "Enchantimals", "Энчантималс", "Енчантімалс"),
 ];
+
+const TOY_CHARACTERS = [
+  buildToyTag("character", 'Barbie "Malibu" Roberts', 'Барби "Малибу" Робертс', 'Барбі "Малібу" Робертс', ["malibu roberts"]),
+  buildToyTag("character", 'Barbie "Brooklyn" Roberts', 'Барби "Бруклин" Робертс', 'Барбі "Бруклін" Робертс', ["brooklyn roberts"]),
+  buildToyTag("character", "Ken", "Кен", "Кен"),
+  buildToyTag("character", "Skipper", "Скиппер", "Скіппер"),
+  buildToyTag("character", "Chelsea", "Челси", "Челсі"),
+  buildToyTag("character", "Stacie", "Стейси", "Стейсі"),
+  buildToyTag("character", "Teresa", "Тереза", "Тереза"),
+  buildToyTag("character", "Christie", "Кристи", "Крісті"),
+  buildToyTag("character", "Midge", "Мидж", "Мідж"),
+  buildToyTag("character", "Raquelle", "Ракель", "Ракель"),
+  buildToyTag("character", "Frankie Stein", "Фрэнки Штейн", "Френкі Штейн"),
+  buildToyTag("character", "Draculaura", "Дракулаура", "Дракулаура"),
+  buildToyTag("character", "Clawdeen Wolf", "Клодин Вульф", "Клодін Вульф"),
+  buildToyTag("character", "Cleo de Nile", "Клео де Нил", "Клео де Ніл"),
+  buildToyTag("character", "Lagoona Blue", "Лагуна Блю", "Лагуна Блю"),
+  buildToyTag("character", "Ghoulia Yelps", "Гулия Йелпс", "Гулія Єлпс"),
+  buildToyTag("character", "Abbey Bominable", "Эбби Боминейбл", "Еббі Бомінейбл"),
+  buildToyTag("character", "Deuce Gorgon", "Дьюс Горгон", "Дьюс Горгон"),
+  buildToyTag("character", "Venus McFlytrap", "Венус Макфлайтрап", "Венус Макфлайтрап"),
+  buildToyTag("character", "Toralei Stripe", "Торалей Страйп", "Торалей Страйп"),
+  buildToyTag("character", "Spectra Vondergeist", "Спектра Вондергейст", "Спектра Вондергайст"),
+  buildToyTag("character", "Operetta", "Оперетта", "Оперетта"),
+  buildToyTag("character", "Robecca Steam", "Робекка Стим", "Робекка Стім"),
+  buildToyTag("character", "Twyla", "Твайла", "Твайла"),
+  buildToyTag("character", "Catty Noir", "Кэтти Нуар", "Кетті Нуар"),
+  buildToyTag("character", "Apple White", "Эппл Уайт", "Еппл Вайт"),
+  buildToyTag("character", "Raven Queen", "Рэйвен Квин", "Рейвен Квін"),
+  buildToyTag("character", "Briar Beauty", "Браер Бьюти", "Браєр Б'юті"),
+  buildToyTag("character", "Ashlynn Ella", "Эшлин Элла", "Ешлін Елла"),
+  buildToyTag("character", "Cerise Hood", "Сериз Худ", "Серіз Худ"),
+  buildToyTag("character", "Darling Charming", "Дарлинг Чарминг", "Дарлінг Чармінг"),
+  buildToyTag("character", "Kitty Cheshire", "Китти Чешир", "Кітті Чешир"),
+  buildToyTag("character", "Madeline Hatter", "Мэдлин Хэттер", "Медлін Геттер"),
+  buildToyTag("character", "Lizzie Hearts", "Лиззи Хартс", "Ліззі Гартс"),
+  buildToyTag("character", "Rosabella Beauty", "Розабелла Бьюти", "Розабелла Б'юті"),
+  buildToyTag("character", "Cedar Wood", "Сидар Вуд", "Сідар Вуд"),
+  buildToyTag("character", "Holly O'Hair", "Холли О'Хэйр", "Голлі О'Гейр"),
+  buildToyTag("character", "Poppy O'Hair", "Поппи О'Хэйр", "Поппі О'Гейр"),
+  buildToyTag("character", "Ruby Anderson", "Руби Андерсон", "Рубі Андерсон"),
+  buildToyTag("character", "Poppy Rowan", "Поппи Роуэн", "Поппі Ровен"),
+  buildToyTag("character", "Sunny Madison", "Санни Мэдисон", "Санні Медісон"),
+  buildToyTag("character", "Jade Hunter", "Джейд Хантер", "Джейд Гантер"),
+  buildToyTag("character", "Skyler Bradshaw", "Скайлер Брэдшоу", "Скайлер Бредшоу"),
+  buildToyTag("character", "Violet Willow", "Вайолет Уиллоу", "Вайолет Віллоу"),
+  buildToyTag("character", "Avery Styles", "Эйвери Стайлз", "Ейвері Стайлз"),
+  buildToyTag("character", "Bella Parker", "Белла Паркер", "Белла Паркер"),
+  buildToyTag("character", "Amaya Raine", "Амайя Рейн", "Амайя Рейн"),
+  buildToyTag("character", "Delilah Fields", "Делайла Филдс", "Делайла Філдс"),
+  buildToyTag("character", "Shanelle Onyx", "Шанель Оникс", "Шанель Онікс"),
+  buildToyTag("character", "Natasha Zima", "Наташа Зима", "Наташа Зима"),
+  buildToyTag("character", "Cloe", "Клое", "Клое"),
+  buildToyTag("character", "Yasmin", "Ясмин", "Ясмін"),
+  buildToyTag("character", "Jade", "Джейд", "Джейд"),
+  buildToyTag("character", "Sasha", "Саша", "Саша"),
+  buildToyTag("character", "Meygan", "Мейган", "Мейган"),
+  buildToyTag("character", "Raya", "Райя", "Рая"),
+  buildToyTag("character", "Nevra", "Невра", "Невра"),
+  buildToyTag("character", "Fianna", "Фианна", "Фіанна"),
+  buildToyTag("character", "Dana", "Дана", "Дана"),
+  buildToyTag("character", "Kumi", "Куми", "Кумі"),
+  buildToyTag("character", "Pullip", "Пуллип", "Пулліп"),
+  buildToyTag("character", "Taeyang", "Тэянг", "Теянг"),
+  buildToyTag("character", "Dal", "Дал", "Дал"),
+  buildToyTag("character", "Byul", "Бюл", "Бюл"),
+  buildToyTag("character", "Isul", "Исуль", "Ісуль"),
+  buildToyTag("character", "Yeolume", "Ёлуме", "Йолуме"),
+  buildToyTag("character", "Namu", "Наму", "Наму"),
+];
+
+const TOY_COLLECTIONS = [
+  buildToyTag("collection", "Fashionistas", "Фэшенистас", "Фешеністаc"),
+  buildToyTag("collection", "Dreamhouse Adventures", "Приключения в Дримхаусе", "Пригоди в Дрімгаусі", ["dream house adventures"]),
+  buildToyTag("collection", "Generation Girl", "Дженерейшн Герл", "Дженерейшн Герл"),
+  buildToyTag("collection", "Happy Family", "Хэппи Фэмили", "Хеппі Фемілі"),
+  buildToyTag("collection", "I Can Be", "Ай Кэн Би", "Ай Кен Бі"),
+  buildToyTag("collection", "Kelly Club", "Келли Клаб", "Келлі Клаб"),
+  buildToyTag("collection", "So In Style", "Со Ин Стайл", "Со Ін Стайл"),
+  buildToyTag("collection", "My Scene", "Май Син", "Май Сін"),
+  buildToyTag("collection", "Haunt Couture", "Хонт Кутюр", "Гонт Кутюр"),
+  buildToyTag("collection", "Boo-riginal Creeproductions", "Бу-ригинал Крипродакшнс", "Бу-ригінал Кріпродакшнс"),
+  buildToyTag("collection", "Creeproductions", "Крипродакшнс", "Кріпродакшнс"),
+  buildToyTag("collection", "Skullector", "Скуллектор", "Скуллектор"),
+  buildToyTag("collection", "Monster Fest", "Монстер Фест", "Монстер Фест"),
+  buildToyTag("collection", "Sweet Screams", "Свит Скримс", "Світ Скрімс"),
+  buildToyTag("collection", "Sweet 1600", "Свит 1600", "Світ 1600"),
+  buildToyTag("collection", "13 Wishes", "13 Желаний", "13 Бажань"),
+  buildToyTag("collection", "Haunted", "Хонтед", "Гонтед"),
+  buildToyTag("collection", "Scaris", "Скарис", "Скаріс"),
+  buildToyTag("collection", "Ghouls Rule", "Гулс Рул", "Гулс Рул"),
+  buildToyTag("collection", "Dawn of the Dance", "Доун оф зе Дэнс", "Доун оф зе Денс"),
+  buildToyTag("collection", "Dead Tired", "Дэд Тайрд", "Дед Тайрд"),
+  buildToyTag("collection", "Picture Day", "Пикчер Дэй", "Пікчер Дей"),
+  buildToyTag("collection", "Freak du Chic", "Фрик дю Шик", "Фрік дю Шик"),
+  buildToyTag("collection", "Freaky Fusion", "Фрики Фьюжн", "Фрікі Ф'южн"),
+  buildToyTag("collection", "Boo York Boo York", "Бу Йорк Бу Йорк", "Бу Йорк Бу Йорк"),
+  buildToyTag("collection", "Great Scarrier Reef", "Грейт Скарьер Риф", "Грейт Скар'єр Ріф"),
+  buildToyTag("collection", "Art Class", "Арт Класс", "Арт Клас"),
+  buildToyTag("collection", "Music Festival", "Мьюзик Фестиваль", "М'юзік Фестиваль"),
+  buildToyTag("collection", "Monster Exchange", "Монстер Эксэндж", "Монстер Ексчендж"),
+  buildToyTag("collection", "New Scaremester", "Нью Скэреместер", "Нью Скейреместер"),
+  buildToyTag("collection", "Skulltimate Secrets", "Скултимейт Сикретс", "Скалтимейт Сікретс"),
+  buildToyTag("collection", "Monster Ball", "Монстер Болл", "Монстер Бол"),
+  buildToyTag("collection", "Fearidescent", "Фиридесент", "Фіридесент"),
+  buildToyTag("collection", "Series 1", "Серия 1", "Серія 1"),
+  buildToyTag("collection", "Series 2", "Серия 2", "Серія 2"),
+  buildToyTag("collection", "Series 3", "Серия 3", "Серія 3"),
+  buildToyTag("collection", "Series 4", "Серия 4", "Серія 4"),
+  buildToyTag("collection", "Series 5", "Серия 5", "Серія 5"),
+  buildToyTag("collection", "Junior High", "Джуниор Хай", "Джуніор Хай"),
+  buildToyTag("collection", "Pacific Coast", "Пасифик Кост", "Пасифік Кост"),
+  buildToyTag("collection", "Rainbow Vision", "Рейнбоу Вижн", "Рейнбоу Віжн"),
+  buildToyTag("collection", "Fantastic Fashion", "Фантастик Фэшн", "Фантастік Фешн"),
+  buildToyTag("collection", "Costume Ball", "Костюм Болл", "Костюм Бол"),
+  buildToyTag("collection", "Slumber Party", "Сламбер Пати", "Сламбер Паті"),
+  buildToyTag("collection", "Winter Break", "Винтер Брейк", "Вінтер Брейк"),
+  buildToyTag("collection", "Littles", "Литлс", "Літлз"),
+  buildToyTag("collection", "Shadow High Series 1", "Шэдоу Хай Серия 1", "Шедоу Хай Серія 1"),
+  buildToyTag("collection", "Shadow High Series 2", "Шэдоу Хай Серия 2", "Шедоу Хай Серія 2"),
+  buildToyTag("collection", "Shadow High Series 3", "Шэдоу Хай Серия 3", "Шедоу Хай Серія 3"),
+  buildToyTag("collection", "Rock Angelz", "Рок Энджелз", "Рок Енджелз"),
+  buildToyTag("collection", "Pretty 'N' Punk", "Претти энд Панк", "Претті енд Панк"),
+  buildToyTag("collection", "Girls Nite Out", "Гёрлз Найт Аут", "Гьорлз Найт Аут"),
+  buildToyTag("collection", "Formal Funk", "Формал Фанк", "Формал Фанк"),
+  buildToyTag("collection", "Tokyo A Go-Go", "Токио А Гоу-Гоу", "Токіо А Гоу-Гоу"),
+  buildToyTag("collection", "Treasures", "Трежерс", "Трежерс"),
+  buildToyTag("collection", "Midnight Dance", "Миднайт Дэнс", "Міднайт Денс"),
+  buildToyTag("collection", "Genie Magic", "Джинни Мэджик", "Джині Меджик"),
+  buildToyTag("collection", "Alwayz Bratz", "Олвейз Братц", "Олвейз Братц"),
+  buildToyTag("collection", "Bratz Babyz", "Братц Бэбиз", "Братц Бебіз"),
+  buildToyTag("collection", "Bratz Kidz", "Братц Кидз", "Братц Кідз"),
+  buildToyTag("collection", "Bratz Boyz", "Братц Бойз", "Братц Бойз"),
+  buildToyTag("collection", "Bratz Collector", "Братц Коллектор", "Братц Колектор"),
+  buildToyTag("collection", "Another Alice", "Аназер Элис", "Аназер Еліс"),
+  buildToyTag("collection", "Rozen Maiden", "Розен Мэйден", "Розен Мейден"),
+  buildToyTag("collection", "Little Pullip", "Литл Пуллип", "Літл Пулліп"),
+  buildToyTag("collection", "Neo Blythe", "Нео Блайз", "Нео Блайз"),
+  buildToyTag("collection", "Middie Blythe", "Мидди Блайз", "Мідді Блайз"),
+  buildToyTag("collection", "Petite Blythe", "Петит Блайз", "Петі Блайз"),
+];
+
+const TOY_TAG_DICTIONARY = [...TOY_BRANDS, ...TOY_CHARACTERS, ...TOY_COLLECTIONS];
+const POST_TAG_CATALOG = TOY_TAG_DICTIONARY.map((entry) => entry.canonical);
 
 const DEFAULT_STATE = {
   currentUserId: "u-me",
@@ -391,6 +403,7 @@ let createCropDrag = null;
 let createSelectedTags = [];
 let createTagQuery = "";
 let createTagError = "";
+let createTagLocale = "uk";
 const DEFAULT_CROP = { x: 50, y: 50, scale: 1 };
 let lastMobileNavIndex = null;
 let didInitialRender = false;
@@ -613,20 +626,37 @@ function tagList(tags = [], tone = "") {
     .join("")}</div>`;
 }
 
+function getToyTagEntry(canonical) {
+  return TOY_TAG_DICTIONARY.find((entry) => entry.canonical === canonical) || null;
+}
+
 function normalizePostTag(tag) {
-  const normalized = String(tag || "")
-    .trim()
-    .replace(/\s+/g, " ");
+  const normalized = compactTagValue(tag);
   if (!normalized) return "";
-  return POST_TAG_CATALOG.find((item) => item.toLowerCase() === normalized.toLowerCase()) || "";
+  return TOY_TAG_DICTIONARY.find((entry) => entry.aliases.includes(normalized))?.canonical || "";
 }
 
 function searchableTagText(tag) {
-  return normalizeTerm(String(tag || "").replace(/[^a-z0-9а-яіїєґ"'&+\- ]/gi, " "));
+  return compactTagValue(String(tag || "").replace(/[^a-z0-9а-яіїєґ"'&+\- ]/gi, " "));
+}
+
+function detectTagLanguage(value = "") {
+  const source = String(value || "");
+  if (/[a-z]/i.test(source) && !/[а-яіїєґёыэъ]/i.test(source)) return "en";
+  if (/[іїєґ]/i.test(source)) return "uk";
+  if (/[ёыэъ]/i.test(source)) return "ru";
+  if (/[а-я]/i.test(source)) return createTagLocale === "en" ? "uk" : createTagLocale;
+  return createTagLocale || "uk";
+}
+
+function displayTagLabel(tag, locale = "uk") {
+  const entry = getToyTagEntry(tag);
+  if (!entry) return tag;
+  return entry.labels[locale] || entry.labels.uk || entry.labels.ru || entry.labels.en || tag;
 }
 
 function tagSuggestionScore(tag, query) {
-  const value = searchableTagText(tag);
+  const value = compactTagValue(tag);
   const words = value.split(" ").filter(Boolean);
   if (value === query) return 500;
   if (value.startsWith(query)) return 400 - value.length;
@@ -639,12 +669,17 @@ function tagSuggestionScore(tag, query) {
 function createTagSuggestions(query = "") {
   const needle = searchableTagText(query);
   if (!needle) return [];
-  return POST_TAG_CATALOG.filter((tag) => !createSelectedTags.includes(tag))
-    .map((tag) => ({ tag, score: tagSuggestionScore(tag, needle) }))
+  const locale = detectTagLanguage(query);
+  return TOY_TAG_DICTIONARY.filter((entry) => !createSelectedTags.includes(entry.canonical))
+    .map((entry) => ({
+      canonical: entry.canonical,
+      label: entry.labels[locale] || entry.labels.en,
+      score: Math.max(...entry.aliases.map((alias) => tagSuggestionScore(alias, needle))),
+    }))
     .filter((item) => item.score >= 0)
-    .sort((a, b) => b.score - a.score || a.tag.localeCompare(b.tag))
+    .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
     .slice(0, 3)
-    .map((item) => item.tag);
+    .map((item) => ({ canonical: item.canonical, label: item.label }));
 }
 
 function normalizeTerm(value = "") {
@@ -1412,6 +1447,7 @@ function renderCreatePost() {
   createSelectedTags = [];
   createTagQuery = "";
   createTagError = "";
+  createTagLocale = "uk";
   renderShell(`
     <section class="create-studio" aria-label="Створення посту або історії">
       <form class="create-camera-form" onsubmit="App.createPost(event)">
@@ -1912,6 +1948,7 @@ function renderCreateTagComposer() {
   const error = document.querySelector("#createTagError");
   const composer = document.querySelector("#createTagComposer");
   if (!input || !selection || !counter || !suggestions || !error || !composer) return;
+  const displayLocale = createTagQuery.trim() ? detectTagLanguage(createTagQuery) : createTagLocale;
 
   if (valueInput) valueInput.value = createSelectedTags.join(", ");
 
@@ -1919,8 +1956,8 @@ function renderCreateTagComposer() {
     ? createSelectedTags
         .map(
           (tag) => `
-            <button class="tag-composer__chip" type="button" onclick="App.removeCreateTag('${encodeURIComponent(tag)}')" aria-label="Прибрати тег ${escapeHtml(tag)}">
-              <span>${escapeHtml(tag)}</span>
+            <button class="tag-composer__chip" type="button" onclick="App.removeCreateTag('${encodeURIComponent(tag)}')" aria-label="Прибрати тег ${escapeHtml(displayTagLabel(tag, displayLocale))}">
+              <span>${escapeHtml(displayTagLabel(tag, displayLocale))}</span>
               <span aria-hidden="true">×</span>
             </button>
           `,
@@ -1936,9 +1973,9 @@ function renderCreateTagComposer() {
   const matched = createSelectedTags.length >= 5 ? [] : createTagSuggestions(createTagQuery);
   suggestions.innerHTML = matched
     .map(
-      (tag) => `
-        <button class="tag-composer__suggestion" type="button" onclick="App.addCreateTag('${encodeURIComponent(tag)}')">
-          ${escapeHtml(tag)}
+      (item) => `
+        <button class="tag-composer__suggestion" type="button" onclick="App.addCreateTag('${encodeURIComponent(item.canonical)}')">
+          ${escapeHtml(item.label)}
         </button>
       `,
     )
@@ -1957,6 +1994,7 @@ function initCreateTagComposer() {
 
 function handleCreateTagInput(value) {
   createTagQuery = String(value || "").replace(/^\s+/, "");
+  if (createTagQuery.trim()) createTagLocale = detectTagLanguage(createTagQuery);
   createTagError = "";
   renderCreateTagComposer();
 }
@@ -2004,7 +2042,7 @@ function handleCreateTagKeydown(event) {
   event.preventDefault();
 
   const exact = normalizePostTag(createTagQuery);
-  const nextTag = exact || createTagSuggestions(createTagQuery)[0];
+  const nextTag = exact || createTagSuggestions(createTagQuery)[0]?.canonical;
   if (nextTag) {
     addCreateTag(nextTag);
     return;
