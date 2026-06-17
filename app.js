@@ -27,38 +27,169 @@ const AESTHETICS = [
   "minimal",
 ];
 
+const TOY_TAG_DICTIONARY = {
+  brands: [
+    "Barbie",
+    "Monster High",
+    "Ever After High",
+    "Bratz",
+    "Bratzillaz",
+    "Rainbow High",
+    "Shadow High",
+    "Pullip",
+    "Blythe",
+    "BJD",
+    "LOL OMG",
+    "My Scene",
+    "Enchantimals",
+  ],
+  characters: [
+    'Barbie "Malibu" Roberts',
+    'Barbie "Brooklyn" Roberts',
+    "Ken",
+    "Skipper",
+    "Chelsea",
+    "Stacie",
+    "Teresa",
+    "Christie",
+    "Midge",
+    "Raquelle",
+    "Frankie Stein",
+    "Draculaura",
+    "Clawdeen Wolf",
+    "Cleo de Nile",
+    "Lagoona Blue",
+    "Ghoulia Yelps",
+    "Abbey Bominable",
+    "Deuce Gorgon",
+    "Venus McFlytrap",
+    "Toralei Stripe",
+    "Spectra Vondergeist",
+    "Operetta",
+    "Robecca Steam",
+    "Twyla",
+    "Catty Noir",
+    "Apple White",
+    "Raven Queen",
+    "Briar Beauty",
+    "Ashlynn Ella",
+    "Cerise Hood",
+    "Darling Charming",
+    "Kitty Cheshire",
+    "Madeline Hatter",
+    "Lizzie Hearts",
+    "Rosabella Beauty",
+    "Cedar Wood",
+    "Holly O'Hair",
+    "Poppy O'Hair",
+    "Ruby Anderson",
+    "Poppy Rowan",
+    "Sunny Madison",
+    "Jade Hunter",
+    "Skyler Bradshaw",
+    "Violet Willow",
+    "Avery Styles",
+    "Stella Monroe",
+    "Bella Parker",
+    "Karma Nichols",
+    "River Kendall",
+    "Krystal Bailey",
+    "Amaya Raine",
+    "Daria Roselyn",
+    "Georgia Bloom",
+    "Sheryl Meyer",
+    "Daphne Minton",
+    "Gabriella Icely",
+    "Emi Vanda",
+    "Mila Berrymore",
+    "Meena Fleur",
+    "Delilah Fields",
+    "Jewel Richie",
+    "Coco Vanderbalt",
+    "Lila Yamamoto",
+    "Victoria Whitman",
+    "Priscilla Perez",
+    "Michelle St. Charles",
+    "Olivia Woods",
+    "Kim Nguyen",
+    "Aidan Russell",
+    "Holly De'Vious",
+    "Laurel De'Vious",
+    "Jett Dawson",
+    "Shanelle Onyx",
+    "Natasha Zima",
+    "Heather Grayson",
+    "Luna Madison",
+    "Zooey Electra",
+    "Cloe",
+    "Yasmin",
+    "Jade",
+    "Sasha",
+    "Meygan",
+    "Raya",
+    "Nevra",
+    "Kumi",
+    "Fianna",
+    "Dana",
+    "Pullip",
+    "Taeyang",
+    "Dal",
+    "Byul",
+    "Isul",
+    "Yeolume",
+    "Namu",
+  ],
+  collections: [
+    "Fashionistas",
+    "Dreamhouse Adventures",
+    "Generation Girl",
+    "Happy Family",
+    "I Can Be",
+    "Kelly Club",
+    "So In Style",
+    "Haunt Couture",
+    "Boo-riginal Creeproductions",
+    "Creeproductions",
+    "Skullector",
+    "Monster Fest",
+    "Series 1",
+    "Series 2",
+    "Series 3",
+    "Series 4",
+    "Series 5",
+    "Junior High",
+    "Pacific Coast",
+    "Rainbow Vision",
+    "Fantastic Fashion",
+    "Costume Ball",
+    "Littles",
+    "Shadow High Series 1",
+    "Shadow High Series 2",
+    "Shadow High Series 3",
+    "Rock Angelz",
+    "Pretty 'N' Punk",
+    "Girls Nite Out",
+    "Formal Funk",
+    "Tokyo A Go-Go",
+    "Treasures",
+    "Alwayz Bratz",
+    "Bratz Babyz",
+    "Bratz Kidz",
+    "Bratz Boyz",
+    "Bratz Collector",
+    "Another Alice",
+    "Rozen Maiden",
+    "Little Pullip",
+    "Neo Blythe",
+    "Middie Blythe",
+    "Petite Blythe",
+  ],
+};
+
 const POST_TAG_CATALOG = [
-  "Barbie",
-  "Monster High",
-  "BJD",
-  "Blythe",
-  "Pullip",
-  "Rainbow High",
-  "vintage",
-  "handmade",
-  "custom",
-  "restoration",
-  "gothic",
-  "pastel",
-  "retro",
-  "kawaii",
-  "fantasy",
-  "realistic",
-  "cottage",
-  "minimal",
-  "shelf",
-  "display",
-  "outfit",
-  "face-up",
-  "repaint",
-  "release",
-  "news",
-  "advice",
-  "review",
-  "photography",
-  "miniature",
-  "collector",
-  "before after",
+  ...TOY_TAG_DICTIONARY.brands,
+  ...TOY_TAG_DICTIONARY.characters,
+  ...TOY_TAG_DICTIONARY.collections,
 ];
 
 const DEFAULT_STATE = {
@@ -490,13 +621,30 @@ function normalizePostTag(tag) {
   return POST_TAG_CATALOG.find((item) => item.toLowerCase() === normalized.toLowerCase()) || "";
 }
 
+function searchableTagText(tag) {
+  return normalizeTerm(String(tag || "").replace(/[^a-z0-9а-яіїєґ"'&+\- ]/gi, " "));
+}
+
+function tagSuggestionScore(tag, query) {
+  const value = searchableTagText(tag);
+  const words = value.split(" ").filter(Boolean);
+  if (value === query) return 500;
+  if (value.startsWith(query)) return 400 - value.length;
+  if (words.some((word) => word.startsWith(query))) return 320 - value.length;
+  if (value.includes(query)) return 220 - value.indexOf(query);
+  if (words.some((word) => word.includes(query))) return 140;
+  return -1;
+}
+
 function createTagSuggestions(query = "") {
-  const needle = String(query || "").trim().toLowerCase();
+  const needle = searchableTagText(query);
   if (!needle) return [];
-  const available = POST_TAG_CATALOG.filter((tag) => !createSelectedTags.includes(tag));
-  const startsWith = available.filter((tag) => tag.toLowerCase().startsWith(needle));
-  const contains = available.filter((tag) => !tag.toLowerCase().startsWith(needle) && tag.toLowerCase().includes(needle));
-  return [...startsWith, ...contains].slice(0, 3);
+  return POST_TAG_CATALOG.filter((tag) => !createSelectedTags.includes(tag))
+    .map((tag) => ({ tag, score: tagSuggestionScore(tag, needle) }))
+    .filter((item) => item.score >= 0)
+    .sort((a, b) => b.score - a.score || a.tag.localeCompare(b.tag))
+    .slice(0, 3)
+    .map((item) => item.tag);
 }
 
 function normalizeTerm(value = "") {
@@ -1358,7 +1506,7 @@ function renderCreatePost() {
                         id="createTagInput"
                         class="tag-composer__input"
                         type="text"
-                        placeholder="Почніть вводити тег"
+                        placeholder="Бренд, персонаж або колекція"
                         autocomplete="off"
                         oninput="App.handleCreateTagInput(this.value)"
                         onkeydown="App.handleCreateTagKeydown(event)"
@@ -1367,7 +1515,6 @@ function renderCreatePost() {
                     </div>
                     <div id="createTagSuggestions" class="tag-composer__suggestions hidden"></div>
                   </div>
-                  <span class="field-note">Обов'язково: від 1 до 5 тегів. Після першої літери з'являться 3 підказки.</span>
                   <span id="createTagError" class="field-error hidden"></span>
                 </label>
                 <button class="button" type="submit">Опублікувати</button>
@@ -1779,11 +1926,11 @@ function renderCreateTagComposer() {
           `,
         )
         .join("")
-    : `<span class="tag-composer__empty">Оберіть до 5 тегів для рекомендацій і пошуку</span>`;
+    : `<span class="tag-composer__empty">Оберіть до 5 тегів: бренд, персонажа або колекцію</span>`;
 
   input.value = createTagQuery;
   input.disabled = createSelectedTags.length >= 5;
-  input.placeholder = createSelectedTags.length >= 5 ? "Ліміт тегів досягнуто" : "Почніть вводити тег";
+  input.placeholder = createSelectedTags.length >= 5 ? "Ліміт тегів досягнуто" : "Бренд, персонаж або колекція";
   counter.textContent = `${createSelectedTags.length}/5`;
 
   const matched = createSelectedTags.length >= 5 ? [] : createTagSuggestions(createTagQuery);
