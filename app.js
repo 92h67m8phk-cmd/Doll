@@ -1,7 +1,9 @@
 const STORE_KEY = "dollshelf-mvp-state-v1";
+const OWNER_ACCESS_KEY = "dollshelf-owner-access-v1";
 const HERO_IMAGE = "./assets/collector-shelf.png";
 const SUPABASE_URL = "https://aqpmkmlrukvwmqmctqxw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_v5BirRwb1zU_GPuKriW7gQ_8UwzEWZ-";
+const ADMIN_USER_ID = "u-me";
 
 const INTERESTS = [
   "Barbie",
@@ -71,6 +73,9 @@ const TOY_CHARACTERS = [
   buildToyTag("character", "Christie", "Кристи", "Крісті"),
   buildToyTag("character", "Midge", "Мидж", "Мідж"),
   buildToyTag("character", "Raquelle", "Ракель", "Ракель"),
+  buildToyTag("character", "Nikki", "Никки", "Ніккі"),
+  buildToyTag("character", "Summer", "Саммер", "Саммер"),
+  buildToyTag("character", "Teresa Rivera", "Тереза Ривера", "Тереза Рівера"),
   buildToyTag("character", "Frankie Stein", "Фрэнки Штейн", "Френкі Штейн"),
   buildToyTag("character", "Draculaura", "Дракулаура", "Дракулаура"),
   buildToyTag("character", "Clawdeen Wolf", "Клодин Вульф", "Клодін Вульф"),
@@ -86,6 +91,18 @@ const TOY_CHARACTERS = [
   buildToyTag("character", "Robecca Steam", "Робекка Стим", "Робекка Стім"),
   buildToyTag("character", "Twyla", "Твайла", "Твайла"),
   buildToyTag("character", "Catty Noir", "Кэтти Нуар", "Кетті Нуар"),
+  buildToyTag("character", "Howleen Wolf", "Хоулин Вульф", "Говлін Вульф"),
+  buildToyTag("character", "Rochelle Goyle", "Рошель Гойл", "Рошель Гойл"),
+  buildToyTag("character", "Jane Boolittle", "Джейн Булиттл", "Джейн Булітл"),
+  buildToyTag("character", "Elissabat", "Эллисабэт", "Еллісабет"),
+  buildToyTag("character", "Honey Swamp", "Хани Свомп", "Гані Свомп"),
+  buildToyTag("character", "Viperine Gorgon", "Вайперин Горгон", "Вайперін Горгон"),
+  buildToyTag("character", "Isi Dawndancer", "Иси Даунденсер", "Ісі Даунденсер"),
+  buildToyTag("character", "Kjersti Trollson", "Кьерсти Троллсон", "К'єрсті Троллсон"),
+  buildToyTag("character", "Amanita Nightshade", "Аманита Найтшейд", "Аманіта Найтшейд"),
+  buildToyTag("character", "Astranova", "Астронова", "Астронова"),
+  buildToyTag("character", "Nefera de Nile", "Нефера де Нил", "Нефера де Ніл"),
+  buildToyTag("character", "C.A. Cupid", "Си Эй Кьюпид", "Сі Ей К'юпід", ["ca cupid", "c.a. cupid"]),
   buildToyTag("character", "Apple White", "Эппл Уайт", "Еппл Вайт"),
   buildToyTag("character", "Raven Queen", "Рэйвен Квин", "Рейвен Квін"),
   buildToyTag("character", "Briar Beauty", "Браер Бьюти", "Браєр Б'юті"),
@@ -121,6 +138,15 @@ const TOY_CHARACTERS = [
   buildToyTag("character", "Fianna", "Фианна", "Фіанна"),
   buildToyTag("character", "Dana", "Дана", "Дана"),
   buildToyTag("character", "Kumi", "Куми", "Кумі"),
+  buildToyTag("character", "Roxxi", "Рокси", "Роксі"),
+  buildToyTag("character", "Phoebe", "Фиби", "Фібі"),
+  buildToyTag("character", "Roxxi and Phoebe", "Рокси и Фиби", "Роксі та Фібі", ["roxxi & phoebe"]),
+  buildToyTag("character", "Felicia", "Фелиция", "Фелісія"),
+  buildToyTag("character", "Tiana", "Тиана", "Тіана"),
+  buildToyTag("character", "Kiana", "Киана", "Кіана"),
+  buildToyTag("character", "Dylan", "Дилан", "Ділан"),
+  buildToyTag("character", "Cameron", "Кэмерон", "Кемерон"),
+  buildToyTag("character", "Eitan", "Эйтан", "Ейтан"),
   buildToyTag("character", "Pullip", "Пуллип", "Пулліп"),
   buildToyTag("character", "Taeyang", "Тэянг", "Теянг"),
   buildToyTag("character", "Dal", "Дал", "Дал"),
@@ -132,6 +158,17 @@ const TOY_CHARACTERS = [
 
 const TOY_COLLECTIONS = [
   buildToyTag("collection", "Fashionistas", "Фэшенистас", "Фешеністаc"),
+  buildToyTag("collection", "Totally Hair", "Тоталли Хэир", "Тоталлі Хеєр"),
+  buildToyTag("collection", "Color Reveal", "Колор Ривил", "Колор Рівіл"),
+  buildToyTag("collection", "Extra", "Экстра", "Екстра"),
+  buildToyTag("collection", "Looks", "Лукс", "Лукс"),
+  buildToyTag("collection", "Signature", "Сигнатур", "Сігнатур"),
+  buildToyTag("collection", "Collector", "Коллектор", "Колектор"),
+  buildToyTag("collection", "BMR1959", "Би-Эм-Ар 1959", "Бі-Ем-Ар 1959"),
+  buildToyTag("collection", "Made to Move", "Мейд ту Мув", "Мейд ту Мув"),
+  buildToyTag("collection", "Cutie Reveal", "Кьюти Ривил", "К'юті Рівіл"),
+  buildToyTag("collection", "Extra Fancy", "Экстра Фэнси", "Екстра Фенсі"),
+  buildToyTag("collection", "Rewind", "Ривайнд", "Рівайнд"),
   buildToyTag("collection", "Dreamhouse Adventures", "Приключения в Дримхаусе", "Пригоди в Дрімгаусі", ["dream house adventures"]),
   buildToyTag("collection", "Generation Girl", "Дженерейшн Герл", "Дженерейшн Герл"),
   buildToyTag("collection", "Happy Family", "Хэппи Фэмили", "Хеппі Фемілі"),
@@ -164,6 +201,17 @@ const TOY_COLLECTIONS = [
   buildToyTag("collection", "Skulltimate Secrets", "Скултимейт Сикретс", "Скалтимейт Сікретс"),
   buildToyTag("collection", "Monster Ball", "Монстер Болл", "Монстер Бол"),
   buildToyTag("collection", "Fearidescent", "Фиридесент", "Фіридесент"),
+  buildToyTag("collection", "Garden Ghouls", "Гарден Гулс", "Гарден Гулз"),
+  buildToyTag("collection", "Shriekwrecked", "Шрикрект", "Шрікрект"),
+  buildToyTag("collection", "Electrified", "Электрифайд", "Електрифайд"),
+  buildToyTag("collection", "Welcome to Monster High", "Добро пожаловать в Монстер Хай", "Ласкаво просимо до Монстер Хай"),
+  buildToyTag("collection", "Party Ghouls", "Пати Гулс", "Паті Гулз"),
+  buildToyTag("collection", "Ghoul's Beast Pet", "Гулс Бист Пет", "Гулз Біст Пет"),
+  buildToyTag("collection", "Frights Camera Action", "Фрайтс Кэмера Экшн", "Фрайтс Камера Екшн"),
+  buildToyTag("collection", "Geek Shriek", "Гик Шрик", "Гік Шрік"),
+  buildToyTag("collection", "I Heart Fashion", "Ай Харт Фэшн", "Ай Гарт Фешн"),
+  buildToyTag("collection", "Coffin Bean", "Коффин Бин", "Коффін Бін"),
+  buildToyTag("collection", "Dot Dead Gorgeous", "Дот Дэд Горджес", "Дот Дед Горджес"),
   buildToyTag("collection", "Series 1", "Серия 1", "Серія 1"),
   buildToyTag("collection", "Series 2", "Серия 2", "Серія 2"),
   buildToyTag("collection", "Series 3", "Серия 3", "Серія 3"),
@@ -188,6 +236,16 @@ const TOY_COLLECTIONS = [
   buildToyTag("collection", "Treasures", "Трежерс", "Трежерс"),
   buildToyTag("collection", "Midnight Dance", "Миднайт Дэнс", "Міднайт Денс"),
   buildToyTag("collection", "Genie Magic", "Джинни Мэджик", "Джині Меджик"),
+  buildToyTag("collection", "Passion 4 Fashion", "Пэшн фор Фэшн", "Пешн фор Фешн"),
+  buildToyTag("collection", "Passion 4 Fashion Diamondz", "Пэшн фор Фэшн Даймондз", "Пешн фор Фешн Даймондз"),
+  buildToyTag("collection", "Wild Wild West", "Вайлд Вайлд Вест", "Вайлд Вайлд Вест"),
+  buildToyTag("collection", "Wintertime Wonderland", "Винтертайм Вандерленд", "Вінтертайм Вандерленд"),
+  buildToyTag("collection", "Hollywood Style", "Голливуд Стайл", "Голлівуд Стайл"),
+  buildToyTag("collection", "Princess", "Принцесс", "Принцес"),
+  buildToyTag("collection", "Sweet Dreamz", "Свит Дримз", "Світ Дрімз"),
+  buildToyTag("collection", "Play Sportz", "Плэй Спортз", "Плей Спортз"),
+  buildToyTag("collection", "Ice Champions", "Айс Чемпионс", "Айс Чемпіонс"),
+  buildToyTag("collection", "Step Out", "Степ Аут", "Степ Аут"),
   buildToyTag("collection", "Alwayz Bratz", "Олвейз Братц", "Олвейз Братц"),
   buildToyTag("collection", "Bratz Babyz", "Братц Бэбиз", "Братц Бебіз"),
   buildToyTag("collection", "Bratz Kidz", "Братц Кидз", "Братц Кідз"),
@@ -205,7 +263,7 @@ const TOY_TAG_DICTIONARY = [...TOY_BRANDS, ...TOY_CHARACTERS, ...TOY_COLLECTIONS
 const POST_TAG_CATALOG = TOY_TAG_DICTIONARY.map((entry) => entry.canonical);
 
 const DEFAULT_STATE = {
-  currentUserId: "u-me",
+  currentUserId: null,
   users: [
     {
       id: "u-me",
@@ -340,6 +398,30 @@ const DEFAULT_STATE = {
       ],
       reports: [],
     },
+    {
+      id: "p-4",
+      userId: "u-me",
+      text: "Зібрала вечірню мініполичку для BJD: холодне світло, мереживо і срібні дрібнички. Як вам настрій кадру?",
+      tags: ["BJD", "fantasy", "shelf"],
+      images: [HERO_IMAGE],
+      createdAt: "2026-06-07T19:20:00.000Z",
+      likes: ["u-lina", "u-marta"],
+      comments: [
+        {
+          id: "c-3",
+          userId: "u-orion",
+          text: "Дуже влучне світло. Я б ще додав трохи прозорого скла на передній план.",
+          createdAt: "2026-06-07T20:05:00.000Z",
+        },
+        {
+          id: "c-4",
+          userId: "u-lina",
+          text: "Мені подобається, як мереживо пом'якшує весь кадр. Дуже атмосферно.",
+          createdAt: "2026-06-07T21:18:00.000Z",
+        },
+      ],
+      reports: [],
+    },
   ],
   discussions: [
     {
@@ -392,6 +474,95 @@ const DEFAULT_STATE = {
       likes: ["u-marta"],
       replies: [],
     },
+    {
+      id: "d-4",
+      userId: "u-me",
+      title: "Покажете свої міні-куточки для BJD фотоісторій?",
+      text: "Хочу зібрати ідеї для маленьких сцен: тканини, світло, підставки, фони і будь-які дрібниці, що працюють у кадрі.",
+      tags: ["BJD", "photo setup", "advice"],
+      createdAt: "2026-06-07T18:15:00.000Z",
+      likes: ["u-lina"],
+      replies: [
+        {
+          id: "r-4",
+          userId: "u-marta",
+          text: "Я часто беру темне дерево і теплі лампочки збоку. Навіть проста сцена одразу стає глибшою.",
+          createdAt: "2026-06-07T19:02:00.000Z",
+        },
+        {
+          id: "r-5",
+          userId: "u-orion",
+          text: "Спробуй матовий акрил як фон, він не дає зайвих відблисків і добре тримає холодний настрій.",
+          createdAt: "2026-06-07T20:24:00.000Z",
+        },
+      ],
+    },
+  ],
+  notifications: [
+    {
+      id: "n-1",
+      type: "post-like",
+      recipientUserId: "u-me",
+      actorUserId: "u-lina",
+      postId: "p-4",
+      createdAt: "2026-06-07T19:52:00.000Z",
+    },
+    {
+      id: "n-2",
+      type: "post-like",
+      recipientUserId: "u-me",
+      actorUserId: "u-marta",
+      postId: "p-4",
+      createdAt: "2026-06-07T20:11:00.000Z",
+    },
+    {
+      id: "n-3",
+      type: "post-comment",
+      recipientUserId: "u-me",
+      actorUserId: "u-orion",
+      postId: "p-4",
+      commentId: "c-3",
+      previewText: "Дуже влучне світло. Я б ще додав трохи прозорого скла на передній план.",
+      createdAt: "2026-06-07T20:05:00.000Z",
+    },
+    {
+      id: "n-4",
+      type: "post-comment",
+      recipientUserId: "u-me",
+      actorUserId: "u-lina",
+      postId: "p-4",
+      commentId: "c-4",
+      previewText: "Мені подобається, як мереживо пом'якшує весь кадр. Дуже атмосферно.",
+      createdAt: "2026-06-07T21:18:00.000Z",
+    },
+    {
+      id: "n-5",
+      type: "discussion-like",
+      recipientUserId: "u-me",
+      actorUserId: "u-lina",
+      discussionId: "d-4",
+      createdAt: "2026-06-07T18:44:00.000Z",
+    },
+    {
+      id: "n-6",
+      type: "discussion-reply",
+      recipientUserId: "u-me",
+      actorUserId: "u-marta",
+      discussionId: "d-4",
+      replyId: "r-4",
+      previewText: "Я часто беру темне дерево і теплі лампочки збоку. Навіть проста сцена одразу стає глибшою.",
+      createdAt: "2026-06-07T19:02:00.000Z",
+    },
+    {
+      id: "n-7",
+      type: "discussion-reply",
+      recipientUserId: "u-me",
+      actorUserId: "u-orion",
+      discussionId: "d-4",
+      replyId: "r-5",
+      previewText: "Спробуй матовий акрил як фон, він не дає зайвих відблисків і добре тримає холодний настрій.",
+      createdAt: "2026-06-07T20:24:00.000Z",
+    },
   ],
 };
 
@@ -414,17 +585,33 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function mergeSeedCollection(defaultItems = [], savedItems = []) {
+  const savedMap = new Map((savedItems || []).map((item) => [item.id, item]));
+  const mergedDefaults = defaultItems.map((item) =>
+    savedMap.has(item.id) ? { ...clone(item), ...clone(savedMap.get(item.id)) } : clone(item),
+  );
+  const extraSavedItems = (savedItems || [])
+    .filter((item) => !defaultItems.some((seed) => seed.id === item.id))
+    .map((item) => clone(item));
+  return [...mergedDefaults, ...extraSavedItems];
+}
+
 function loadState() {
   const saved = localStorage.getItem(STORE_KEY);
   if (!saved) return clone(DEFAULT_STATE);
   try {
     const parsed = JSON.parse(saved);
+    const savedAdminUser = (parsed.users || []).find((user) => user.id === ADMIN_USER_ID);
+    if (parsed.currentUserId === ADMIN_USER_ID && savedAdminUser?.isAdmin) {
+      localStorage.setItem(OWNER_ACCESS_KEY, "granted");
+    }
     return {
       ...clone(DEFAULT_STATE),
       ...parsed,
-      users: parsed.users || clone(DEFAULT_STATE.users),
-      posts: parsed.posts || clone(DEFAULT_STATE.posts),
-      discussions: parsed.discussions || clone(DEFAULT_STATE.discussions),
+      users: mergeSeedCollection(DEFAULT_STATE.users, parsed.users),
+      posts: mergeSeedCollection(DEFAULT_STATE.posts, parsed.posts),
+      discussions: mergeSeedCollection(DEFAULT_STATE.discussions, parsed.discussions),
+      notifications: mergeSeedCollection(DEFAULT_STATE.notifications, parsed.notifications),
     };
   } catch {
     return clone(DEFAULT_STATE);
@@ -433,6 +620,14 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+function hasOwnerAccess() {
+  return localStorage.getItem(OWNER_ACCESS_KEY) === "granted";
+}
+
+function canAccessAdmin(user = currentUser()) {
+  return Boolean(user && user.id === ADMIN_USER_ID && user.isAdmin && hasOwnerAccess());
 }
 
 function resetState() {
@@ -459,6 +654,72 @@ function findPost(id) {
 
 function findDiscussion(id) {
   return state.discussions.find((discussion) => discussion.id === id);
+}
+
+function shortenText(value = "", limit = 92) {
+  const source = String(value || "").trim();
+  if (source.length <= limit) return source;
+  return `${source.slice(0, Math.max(0, limit - 1)).trimEnd()}…`;
+}
+
+function createNotification({
+  type,
+  recipientUserId,
+  actorUserId,
+  postId = "",
+  discussionId = "",
+  commentId = "",
+  replyId = "",
+  previewText = "",
+  createdAt = new Date().toISOString(),
+}) {
+  if (!type || !recipientUserId || !actorUserId || recipientUserId === actorUserId) return;
+  state.notifications.unshift({
+    id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    recipientUserId,
+    actorUserId,
+    postId,
+    discussionId,
+    commentId,
+    replyId,
+    previewText,
+    createdAt,
+  });
+}
+
+function removeNotifications(match) {
+  state.notifications = (state.notifications || []).filter((notification) => !match(notification));
+}
+
+function notificationHref(notification) {
+  if (notification.postId) {
+    const commentQuery = notification.commentId ? `?comment=${encodeURIComponent(notification.commentId)}` : "";
+    return `#/post/${notification.postId}${commentQuery}`;
+  }
+  if (notification.discussionId) {
+    const replyQuery = notification.replyId ? `?reply=${encodeURIComponent(notification.replyId)}&from=notifications` : "?from=notifications";
+    return `#/thread/${notification.discussionId}${replyQuery}`;
+  }
+  return "#/notifications";
+}
+
+function visibleNotifications(userId) {
+  return (state.notifications || [])
+    .filter((notification) => notification.recipientUserId === userId)
+    .filter((notification) => {
+      const actor = findUser(notification.actorUserId);
+      if (!actor || actor.blocked) return false;
+      if (notification.postId && !findPost(notification.postId)) return false;
+      if (notification.discussionId && !findDiscussion(notification.discussionId)) return false;
+      return true;
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function notificationCount(user) {
+  if (!user) return 0;
+  return visibleNotifications(user.id).length;
 }
 
 function supabaseHeaders(extra = {}) {
