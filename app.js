@@ -301,6 +301,18 @@ const TOY_COLLECTIONS = [
 
 const TOY_TAG_DICTIONARY = [...TOY_BRANDS, ...TOY_CHARACTERS, ...TOY_COLLECTIONS];
 const POST_TAG_CATALOG = TOY_TAG_DICTIONARY.map((entry) => entry.canonical);
+const PROFILE_SHELF_SECTIONS = ["collection", "wishlist"];
+const PROFILE_SHELF_THEMES = {
+  rose: ["#f8dceb", "#d98bb6", "#6e3b5d"],
+  moon: ["#e2e6ff", "#92a2f3", "#394585"],
+  sage: ["#efe2f3", "#b68fd3", "#5c3f71"],
+  ink: ["#e5e3f6", "#9b92d9", "#453e72"],
+  mint: ["#e2ebff", "#83a8f2", "#325295"],
+  noir: ["#eadff0", "#ab87bc", "#533764"],
+  sunset: ["#f6deef", "#d38eb8", "#74466b"],
+  porcelain: ["#f8edf8", "#cab1df", "#6f5b85"],
+};
+const WISHLIST_CREATE_FIELD_LIMIT = 3;
 
 const DEFAULT_STATE = {
   currentUserId: null,
@@ -321,6 +333,94 @@ const DEFAULT_STATE = {
       etsy: "",
       avatar: "",
       cover: "",
+      collectionDolls: [
+        {
+          id: "shelf-me-1",
+          name: "Minifee Chloe",
+          line: "fairy wardrobe",
+          note: "face-up restored and back on display",
+          accent: "display favorite",
+          palette: "moon",
+        },
+        {
+          id: "shelf-me-2",
+          name: "Vintage Barbie",
+          line: "silk evening set",
+          note: "original jewelry and stand kept together",
+          accent: "1970s shelf",
+          palette: "rose",
+        },
+        {
+          id: "shelf-me-3",
+          name: "Barbie Looks 13",
+          line: "silver city styling",
+          note: "restyled for photo corners and feed shots",
+          accent: "photo ready",
+          palette: "ink",
+        },
+        {
+          id: "shelf-me-4",
+          name: "Unoa Lusis",
+          line: "lace study",
+          note: "custom wig 1/4 and soft ivory layers",
+          accent: "work in progress",
+          palette: "sage",
+        },
+      ],
+      wishlistDolls: [
+        {
+          id: "wish-me-1",
+          name: "Pullip Classical Alice",
+          brand: "Pullip",
+          collectionName: "Classical Alice",
+          line: "dream grail",
+          note: "still waiting for a clean complete set",
+          estimatedPrice: 410,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "porcelain",
+        },
+        {
+          id: "wish-me-2",
+          name: "Blythe Prima Dolly",
+          brand: "Neo Blythe",
+          collectionName: "Prima Dolly",
+          line: "soft retro shelf",
+          note: "already found through a trusted collector",
+          estimatedPrice: 185,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: true,
+          palette: "mint",
+        },
+        {
+          id: "wish-me-3",
+          name: "Monster High Elissabat",
+          brand: "Monster High",
+          collectionName: "Signature / G1",
+          line: "boxed first wave",
+          note: "watching listings and saving price history",
+          estimatedPrice: 240,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "noir",
+        },
+        {
+          id: "wish-me-4",
+          name: "Barbie BMR1959 Midge",
+          brand: "Barbie",
+          collectionName: "BMR1959",
+          line: "display pairing",
+          note: "reserved, just waiting to arrive home",
+          estimatedPrice: 95,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: true,
+          palette: "sunset",
+        },
+      ],
       following: ["u-lina", "u-marta"],
       followers: ["u-lina", "u-orion"],
       blocked: false,
@@ -342,6 +442,81 @@ const DEFAULT_STATE = {
       etsy: "https://etsy.com/shop/pastelpullip",
       avatar: "",
       cover: "",
+      collectionDolls: [
+        {
+          id: "shelf-lina-1",
+          name: "Pullip Alice du Jardin",
+          line: "pastel tea shelf",
+          note: "styled with tiny glasses and ribbon socks",
+          accent: "main shelf",
+          palette: "mint",
+        },
+        {
+          id: "shelf-lina-2",
+          name: "Neo Blythe Coco",
+          line: "strawberry room",
+          note: "kept near handmade knit cardigans",
+          accent: "mini studio",
+          palette: "rose",
+        },
+        {
+          id: "shelf-lina-3",
+          name: "Dal Pixie",
+          line: "soft lilac display",
+          note: "tiny baskets and paper florals included",
+          accent: "storybook",
+          palette: "porcelain",
+        },
+        {
+          id: "shelf-lina-4",
+          name: "Petite Blythe",
+          line: "travel shelf",
+          note: "smallest shelf friend for bag photos",
+          accent: "carry favorite",
+          palette: "sunset",
+        },
+      ],
+      wishlistDolls: [
+        {
+          id: "wish-lina-1",
+          name: "Pullip Bonita",
+          brand: "Pullip",
+          collectionName: "Bonita",
+          line: "soft gothic contrast",
+          note: "looking for complete outfit and stand",
+          estimatedPrice: 290,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "noir",
+        },
+        {
+          id: "wish-lina-2",
+          name: "Middie Blythe Sugar",
+          brand: "Middie Blythe",
+          collectionName: "Sugar",
+          line: "tiny shelf color",
+          note: "already secured from a local meetup",
+          estimatedPrice: 145,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: true,
+          palette: "mint",
+        },
+        {
+          id: "wish-lina-3",
+          name: "Pullip Alice in Steampunk",
+          brand: "Pullip",
+          collectionName: "Alice in Steampunk World",
+          line: "cabinet grail",
+          note: "tracking restocks and collector groups",
+          estimatedPrice: 350,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "ink",
+        },
+      ],
       following: ["u-me"],
       followers: ["u-me", "u-marta"],
       blocked: false,
@@ -363,6 +538,81 @@ const DEFAULT_STATE = {
       etsy: "",
       avatar: "",
       cover: "",
+      collectionDolls: [
+        {
+          id: "shelf-marta-1",
+          name: "Draculaura Sweet 1600",
+          line: "velvet display",
+          note: "posed with black lace and chrome stand",
+          accent: "gothic shelf",
+          palette: "noir",
+        },
+        {
+          id: "shelf-marta-2",
+          name: "Frankie Stein G1",
+          line: "storm cabinet",
+          note: "repaired joints and softer lip repaint",
+          accent: "restored",
+          palette: "moon",
+        },
+        {
+          id: "shelf-marta-3",
+          name: "Elissabat",
+          line: "dark cinema corner",
+          note: "displayed with mirror props and dim lights",
+          accent: "night setup",
+          palette: "rose",
+        },
+        {
+          id: "shelf-marta-4",
+          name: "Rochelle Goyle",
+          line: "stone lace mix",
+          note: "paired with antique frames and silver chain",
+          accent: "contrast piece",
+          palette: "ink",
+        },
+      ],
+      wishlistDolls: [
+        {
+          id: "wish-marta-1",
+          name: "Draculaura Haunt Couture",
+          brand: "Monster High",
+          collectionName: "Haunt Couture",
+          line: "boxed collector grail",
+          note: "monitoring only trusted seller circles",
+          estimatedPrice: 380,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "rose",
+        },
+        {
+          id: "wish-marta-2",
+          name: "Cleo de Nile First Wave",
+          brand: "Monster High",
+          collectionName: "First Wave / G1",
+          line: "restoration candidate",
+          note: "already found, waiting for delivery photos",
+          estimatedPrice: 210,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: true,
+          palette: "sunset",
+        },
+        {
+          id: "wish-marta-3",
+          name: "Operetta Dot Dead Gorgeous",
+          brand: "Monster High",
+          collectionName: "Dot Dead Gorgeous",
+          line: "vinyl shelf dream",
+          note: "still hunting with box in fair condition",
+          estimatedPrice: 165,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "noir",
+        },
+      ],
       following: ["u-lina"],
       followers: ["u-me"],
       blocked: false,
@@ -384,6 +634,73 @@ const DEFAULT_STATE = {
       etsy: "https://etsy.com/shop/bjdatelier",
       avatar: "",
       cover: "",
+      collectionDolls: [
+        {
+          id: "shelf-orion-1",
+          name: "Doll Chateau Colin",
+          line: "forest resin study",
+          note: "matte face-up with moss green eyes",
+          accent: "atelier favorite",
+          palette: "sage",
+        },
+        {
+          id: "shelf-orion-2",
+          name: "Volks MSD F-18",
+          line: "gray tailoring",
+          note: "joint repair finished this spring",
+          accent: "restored",
+          palette: "ink",
+        },
+        {
+          id: "shelf-orion-3",
+          name: "Unoa Chibi",
+          line: "soft fantasy pose",
+          note: "kept for lighting and wig tests",
+          accent: "studio helper",
+          palette: "moon",
+        },
+      ],
+      wishlistDolls: [
+        {
+          id: "wish-orion-1",
+          name: "Switch Milhwa",
+          brand: "Switch",
+          collectionName: "Milhwa",
+          line: "face-up project",
+          note: "still collecting references before buying",
+          estimatedPrice: 560,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "porcelain",
+        },
+        {
+          id: "wish-orion-2",
+          name: "Volks SDGr body",
+          brand: "Volks",
+          collectionName: "SDGr",
+          line: "hybrid build",
+          note: "found from a local trade circle",
+          estimatedPrice: 420,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: true,
+          palette: "sage",
+        },
+        {
+          id: "wish-orion-3",
+          name: "Luts Kid Delf",
+          brand: "Luts",
+          collectionName: "Kid Delf",
+          line: "cold fantasy setup",
+          note: "watching for neutral resin match",
+          estimatedPrice: 330,
+          currency: "$",
+          priceUpdatedAt: "2026-06-18T00:15:00.000Z",
+          purchased: false,
+          palette: "moon",
+        },
+      ],
       following: ["u-me"],
       followers: [],
       blocked: false,
@@ -624,6 +941,18 @@ let lastMobileNavIndex = null;
 let didInitialRender = false;
 let remoteDiscussionsLoaded = false;
 let remoteDiscussionsError = "";
+let wishlistCreateDraft = emptyWishlistDraft();
+
+function emptyWishlistDraft() {
+  return {
+    image: "",
+    brand: "",
+    collectionName: "",
+    name: "",
+    note: "",
+    condition: "used",
+  };
+}
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -923,6 +1252,392 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function normalizeProfileSection(value = "") {
+  return PROFILE_SHELF_SECTIONS.includes(value) ? value : "collection";
+}
+
+function profileShelfHref(userId, section = "collection", params = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""),
+  ).toString();
+  const base = `#/profile/${userId}/${normalizeProfileSection(section)}`;
+  return query ? `${base}?${query}` : base;
+}
+
+function shelfSectionIndex(section = "collection") {
+  return PROFILE_SHELF_SECTIONS.indexOf(normalizeProfileSection(section));
+}
+
+function wishlistItemHref(userId, itemId) {
+  return profileShelfHref(userId, "wishlist", { wish: itemId });
+}
+
+function wishlistCreateHref(userId) {
+  return profileShelfHref(userId, "wishlist", { create: "wishlist" });
+}
+
+function openWishlistItem(userId, itemId) {
+  if (!userId || !itemId) return;
+  routeTo(wishlistItemHref(userId, itemId));
+}
+
+function openWishlistCreate(userId) {
+  if (!userId) return;
+  wishlistCreateDraft = emptyWishlistDraft();
+  routeTo(wishlistCreateHref(userId));
+}
+
+function closeWishlistCreate(userId) {
+  if (!userId) return;
+  wishlistCreateDraft = emptyWishlistDraft();
+  routeTo(profileShelfHref(userId, "wishlist"));
+}
+
+function shelfMonogram(label = "") {
+  return String(label || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "DS";
+}
+
+function shelfArtDataUrl(item = {}) {
+  const [soft, vivid, deep] = PROFILE_SHELF_THEMES[item.palette] || PROFILE_SHELF_THEMES.rose;
+  const monogram = shelfMonogram(item.name);
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 900" role="img" aria-label="${monogram}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${soft}" />
+          <stop offset="55%" stop-color="${vivid}" />
+          <stop offset="100%" stop-color="${deep}" />
+        </linearGradient>
+        <radialGradient id="glowA" cx="28%" cy="18%" r="62%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.78)" />
+          <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+        </radialGradient>
+        <radialGradient id="glowB" cx="78%" cy="78%" r="45%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.5)" />
+          <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+        </radialGradient>
+      </defs>
+      <rect width="720" height="900" rx="72" fill="url(#bg)" />
+      <circle cx="220" cy="180" r="220" fill="url(#glowA)" />
+      <circle cx="610" cy="720" r="170" fill="url(#glowB)" />
+      <circle cx="555" cy="165" r="110" fill="rgba(255,255,255,0.16)" />
+      <circle cx="165" cy="670" r="130" fill="rgba(255,255,255,0.12)" />
+      <path d="M118 620 C 248 438 436 352 606 268" fill="none" stroke="rgba(255,255,255,0.24)" stroke-width="14" stroke-linecap="round"/>
+      <path d="M138 720 C 278 538 430 458 580 388" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="8" stroke-linecap="round"/>
+      <text x="74" y="786" fill="rgba(255,255,255,0.66)" font-family="Georgia, serif" font-size="206" font-weight="700">${monogram}</text>
+    </svg>
+  `;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function marketplaceSiteQueryUrl(domain, query) {
+  return `https://www.google.com/search?q=${encodeURIComponent(`site:${domain} ${query}`)}`;
+}
+
+function wishlistSearchQuery(item = {}) {
+  return [item.brand, item.collectionName, item.name].filter(Boolean).join(" ").trim() || item.name || "doll";
+}
+
+function marketplaceSuggestions(user, item) {
+  const query = wishlistSearchQuery(item);
+  const country = compactTagValue(user?.country || "");
+  const presets = {
+    "україна": [
+      ["OLX", marketplaceSiteQueryUrl("olx.ua", query)],
+      ["Prom", marketplaceSiteQueryUrl("prom.ua", query)],
+      ["Etsy", `https://www.etsy.com/search?q=${encodeURIComponent(query)}`],
+    ],
+    "украина": [
+      ["OLX", marketplaceSiteQueryUrl("olx.ua", query)],
+      ["Prom", marketplaceSiteQueryUrl("prom.ua", query)],
+      ["Etsy", `https://www.etsy.com/search?q=${encodeURIComponent(query)}`],
+    ],
+    "польща": [
+      ["Allegro", marketplaceSiteQueryUrl("allegro.pl", query)],
+      ["OLX Polska", marketplaceSiteQueryUrl("olx.pl", query)],
+      ["Etsy", `https://www.etsy.com/search?q=${encodeURIComponent(query)}`],
+    ],
+    "польша": [
+      ["Allegro", marketplaceSiteQueryUrl("allegro.pl", query)],
+      ["OLX Polska", marketplaceSiteQueryUrl("olx.pl", query)],
+      ["Etsy", `https://www.etsy.com/search?q=${encodeURIComponent(query)}`],
+    ],
+    "німеччина": [
+      ["Kleinanzeigen", marketplaceSiteQueryUrl("kleinanzeigen.de", query)],
+      ["eBay DE", `https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent(query)}`],
+      ["Vinted", marketplaceSiteQueryUrl("vinted.de", query)],
+    ],
+    "германия": [
+      ["Kleinanzeigen", marketplaceSiteQueryUrl("kleinanzeigen.de", query)],
+      ["eBay DE", `https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent(query)}`],
+      ["Vinted", marketplaceSiteQueryUrl("vinted.de", query)],
+    ],
+  };
+  return (presets[country] || [
+    ["eBay", `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}`],
+    ["Etsy", `https://www.etsy.com/search?q=${encodeURIComponent(query)}`],
+    ["Mercari", marketplaceSiteQueryUrl("mercari.com", query)],
+  ]).map(([label, url]) => ({ label, url }));
+}
+
+function estimateWishlistPriceRange(item = {}) {
+  const query = wishlistSearchQuery(item).toLowerCase();
+  const condition = item.condition || "used";
+  const ranges = {
+    pullip: condition === "new" ? [340, 390] : [280, 330],
+    blythe: condition === "new" ? [180, 220] : [140, 175],
+    "monster high": condition === "new" ? [170, 210] : [120, 160],
+    barbie: condition === "new" ? [95, 135] : [70, 105],
+    bjd: condition === "new" ? [420, 520] : [300, 390],
+  };
+  if (query.includes("pullip")) return { min: ranges.pullip[0], max: ranges.pullip[1], currency: "$" };
+  if (query.includes("blythe")) return { min: ranges.blythe[0], max: ranges.blythe[1], currency: "$" };
+  if (query.includes("monster high")) return { min: ranges["monster high"][0], max: ranges["monster high"][1], currency: "$" };
+  if (query.includes("barbie")) return { min: ranges.barbie[0], max: ranges.barbie[1], currency: "$" };
+  if (query.includes("bjd") || query.includes("volks") || query.includes("luts") || query.includes("switch")) {
+    return { min: ranges.bjd[0], max: ranges.bjd[1], currency: "$" };
+  }
+  return condition === "new" ? { min: 180, max: 220, currency: "$" } : { min: 150, max: 180, currency: "$" };
+}
+
+function formatWishlistRange(item = {}) {
+  if (item.priceRangeLabel) return item.priceRangeLabel;
+  if (item.priceMin && item.priceMax && item.currency) return `${item.priceMin}-${item.priceMax}${item.currency}`;
+  return "Coming soon";
+}
+
+function buildWishlistDraftItem(user) {
+  const range = estimateWishlistPriceRange(wishlistCreateDraft);
+  return {
+    id: `wish-${Date.now()}`,
+    name: wishlistCreateDraft.name.trim(),
+    brand: wishlistCreateDraft.brand.trim(),
+    collectionName: wishlistCreateDraft.collectionName.trim(),
+    line: wishlistCreateDraft.collectionName.trim() || "wishlist entry",
+    note: wishlistCreateDraft.note.trim(),
+    condition: wishlistCreateDraft.condition,
+    purchased: false,
+    palette: "rose",
+    image: wishlistCreateDraft.image,
+    priceMin: range.min,
+    priceMax: range.max,
+    currency: range.currency,
+    priceRangeLabel: `${range.min}-${range.max}${range.currency}`,
+    priceUpdatedAt: new Date().toISOString(),
+    marketLinks: marketplaceSuggestions(user, wishlistCreateDraft),
+  };
+}
+
+function wishlistCreateReady() {
+  return Boolean(
+    wishlistCreateDraft.image &&
+      wishlistCreateDraft.brand.trim() &&
+      wishlistCreateDraft.collectionName.trim() &&
+      wishlistCreateDraft.name.trim(),
+  );
+}
+
+function wishlistConditionLabel(value = "used") {
+  return value === "new" ? "Нова" : "Б/У";
+}
+
+function toySuggestionsByType(type, value = "") {
+  const query = compactTagValue(value);
+  if (!query) return [];
+  const mappedType = type === "collectionName" ? "collection" : type;
+  const source = TOY_TAG_DICTIONARY.filter((entry) => entry.type === mappedType);
+  return source
+    .map((entry) => ({ entry, score: tagSuggestionScore(entry.canonical, query) }))
+    .filter((item) => item.score >= 0)
+    .sort((a, b) => b.score - a.score || a.entry.canonical.localeCompare(b.entry.canonical))
+    .slice(0, WISHLIST_CREATE_FIELD_LIMIT)
+    .map(({ entry }) => ({
+      value: entry.canonical,
+      label: displayTagLabel(entry.canonical, detectTagLanguage(value || entry.canonical)),
+    }));
+}
+
+function renderWishlistCreateSuggestions(field) {
+  const container = document.querySelector(`[data-wishlist-suggestions="${field}"]`);
+  if (!container) return;
+  if (!wishlistCreateDraft[field].trim()) {
+    container.innerHTML = "";
+    container.classList.add("hidden");
+    return;
+  }
+  const matched = toySuggestionsByType(field === "name" ? "character" : field, wishlistCreateDraft[field]);
+  container.innerHTML = matched
+    .map(
+      (item) => `
+        <button class="tag-composer__suggestion" type="button" onclick="App.applyWishlistSuggestion('${field}', '${encodeURIComponent(item.value)}')">
+          ${escapeHtml(item.label)}
+        </button>
+      `,
+    )
+    .join("");
+  container.classList.toggle("hidden", !matched.length);
+}
+
+function renderWishlistMarketLinks(user, item) {
+  const links = (item.marketLinks?.length ? item.marketLinks : marketplaceSuggestions(user, item)).slice(0, 3);
+  return links
+    .map(
+      ({ label, url }) => `
+        <a class="wishlist-market-link" href="${escapeHtml(url)}" target="_blank" rel="noreferrer">
+          <strong>${escapeHtml(label)}</strong>
+          <span>${escapeHtml(user?.country || "Marketplace search")}</span>
+        </a>
+      `,
+    )
+    .join("");
+}
+
+function renderWishlistFocusModal(user, item) {
+  if (!item) return "";
+  const closeHref = profileShelfHref(user.id, "wishlist");
+  const imageSrc = item.image || shelfArtDataUrl(item);
+  const priceLabel =
+    item.estimatedPrice && item.currency ? `${item.currency}${item.estimatedPrice}` : formatWishlistRange(item);
+  const updatedLabel = item.priceUpdatedAt ? formatDate(item.priceUpdatedAt) : "market snapshot pending";
+  return `
+    <div class="wishlist-focus-sheet is-open" role="dialog" aria-modal="true" aria-labelledby="wishlistFocusTitle">
+      <a class="wishlist-focus-backdrop" href="${closeHref}" aria-label="Закрити картку"></a>
+      <section class="wishlist-focus-card">
+        <div class="wishlist-focus-head">
+          <div>
+            <span class="wishlist-focus-kicker">Wish List Focus</span>
+            <h2 id="wishlistFocusTitle">${escapeHtml(item.name || "Wish List item")}</h2>
+          </div>
+          <a class="ghost-button small" href="${closeHref}" aria-label="Закрити">Закрити</a>
+        </div>
+        <div class="wishlist-focus-layout">
+          <div class="wishlist-focus-visual">
+            <img src="${imageSrc}" alt="${escapeHtml(item.name || "Doll wish")}" />
+            <button
+              class="wishlist-status-switch ${item.purchased ? "is-found" : "is-hunting"}"
+              type="button"
+              onclick="App.toggleWishlistStatus('${user.id}', '${item.id}')"
+              aria-pressed="${item.purchased ? "true" : "false"}"
+              aria-label="${item.purchased ? "Позначити як ще в пошуку" : "Позначити як знайдено"}"
+            >
+              <span class="wishlist-status-switch-track">
+                <span class="wishlist-status-switch-thumb" aria-hidden="true"></span>
+              </span>
+            </button>
+          </div>
+          <div class="wishlist-focus-content">
+            <div class="wishlist-focus-fields">
+              <div class="wishlist-focus-field">
+                <span>Бренд</span>
+                <strong>${escapeHtml(item.brand || "Unknown")}</strong>
+              </div>
+              <div class="wishlist-focus-field">
+                <span>Колекція</span>
+                <strong>${escapeHtml(item.collectionName || item.line || "Unknown")}</strong>
+              </div>
+              <div class="wishlist-focus-field">
+                <span>Ім'я</span>
+                <strong>${escapeHtml(item.name || "Unknown")}</strong>
+              </div>
+              <div class="wishlist-focus-field">
+                <span>Стан</span>
+                <strong>${escapeHtml(wishlistConditionLabel(item.condition))}</strong>
+              </div>
+            </div>
+            <div class="wishlist-focus-price-card">
+              <span>Орієнтовна вартість</span>
+              <strong>${escapeHtml(priceLabel)}</strong>
+              <p>Останній snapshot: ${escapeHtml(updatedLabel)}</p>
+            </div>
+            <div class="wishlist-focus-note">
+              <p>${escapeHtml(item.note || "Поки що без додаткових нотаток.")}</p>
+            </div>
+            <div class="wishlist-market-block">
+              <div class="wishlist-market-head">
+                <h3>Де шукати</h3>
+                <p>Три швидкі переходи по маркетплейсах для країни профілю.</p>
+              </div>
+              <div class="wishlist-market-list">
+                ${renderWishlistMarketLinks(user, item)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function renderWishlistCreateModal(user) {
+  return `
+    <div class="wishlist-focus-sheet is-open" role="dialog" aria-modal="true" aria-labelledby="wishlistCreateTitle">
+      <button class="wishlist-focus-backdrop wishlist-focus-backdrop-button" type="button" onclick="App.closeWishlistCreate('${user.id}')" aria-label="Закрити створення"></button>
+      <section class="wishlist-focus-card wishlist-create-card">
+        <div class="wishlist-focus-head">
+          <div>
+            <span class="wishlist-focus-kicker">New Wish</span>
+            <h2 id="wishlistCreateTitle">Нова картка Wish List</h2>
+          </div>
+          <button class="ghost-button small" type="button" onclick="App.closeWishlistCreate('${user.id}')">Закрити</button>
+        </div>
+        <form class="wishlist-create-form" onsubmit="App.publishWishlistItem(event, '${user.id}')">
+          <div class="wishlist-create-preview">
+            <label class="wishlist-create-image-slot" for="wishlistCreateImage">
+              ${
+                wishlistCreateDraft.image
+                  ? `<img src="${wishlistCreateDraft.image}" alt="Нове фото wish list" />`
+                  : `
+                    <span class="wishlist-create-image-placeholder">
+                      <span class="wishlist-create-image-plus">${navIcon("plus")}</span>
+                      <strong>Додати фото</strong>
+                      <span>одне фото з галереї</span>
+                    </span>
+                  `
+              }
+            </label>
+            <input id="wishlistCreateImage" class="hidden-file" type="file" accept="image/*" onchange="App.pickWishlistImage(event)" />
+          </div>
+          <div class="wishlist-create-fields">
+            <label class="field">
+              Бренд
+              <input name="brand" value="${escapeHtml(wishlistCreateDraft.brand)}" autocomplete="off" oninput="App.updateWishlistDraftField('brand', this.value)" />
+              <div data-wishlist-suggestions="brand" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <label class="field">
+              Колекція
+              <input name="collectionName" value="${escapeHtml(wishlistCreateDraft.collectionName)}" autocomplete="off" oninput="App.updateWishlistDraftField('collectionName', this.value)" />
+              <div data-wishlist-suggestions="collectionName" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <label class="field">
+              Ім'я
+              <input name="name" value="${escapeHtml(wishlistCreateDraft.name)}" autocomplete="off" oninput="App.updateWishlistDraftField('name', this.value)" />
+              <div data-wishlist-suggestions="name" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <div class="wishlist-condition-row">
+              <span class="wishlist-condition-label">Стан</span>
+              <button class="wishlist-condition-toggle ${wishlistCreateDraft.condition === "new" ? "is-new" : "is-used"}" type="button" onclick="App.toggleWishlistCondition()">
+                <span>${escapeHtml(wishlistConditionLabel(wishlistCreateDraft.condition))}</span>
+              </button>
+            </div>
+            <label class="field full">
+              Особистий коментар
+              <textarea name="note" placeholder="Що саме ти шукаєш, стан, комплектність, особливості..." oninput="App.updateWishlistDraftField('note', this.value)">${escapeHtml(wishlistCreateDraft.note)}</textarea>
+            </label>
+          </div>
+          <button class="button wishlist-create-submit ${wishlistCreateReady() ? "" : "is-disabled"}" type="submit" ${wishlistCreateReady() ? "" : "disabled"}>
+            Опублікувати
+          </button>
+        </form>
+      </section>
+    </div>
+  `;
 }
 
 function tagList(tags = [], tone = "") {
@@ -1228,6 +1943,11 @@ function pluralPeople(count) {
 
 function getHash() {
   return window.location.hash || "#/feed";
+}
+
+function getHashQueryParams() {
+  const [, query = ""] = getHash().split("?");
+  return new URLSearchParams(query);
 }
 
 function routeTo(hash) {
@@ -1591,21 +2311,178 @@ function renderPostCard(post) {
   `;
 }
 
-function renderProfile(id) {
+function renderShelfCard(item, section = "collection", userId = "") {
+  const isWishlist = section === "wishlist";
+  const cardMarkup = `
+    <article class="profile-shelf-card ${isWishlist ? "is-wishlist" : ""}">
+      <div class="profile-shelf-card-visual">
+        <img src="${escapeHtml(item.image || shelfArtDataUrl(item))}" alt="${escapeHtml(item.name || "Doll card")}" />
+        ${
+          isWishlist
+            ? `
+              <span class="profile-shelf-card-badge wishlist-indicator ${item.purchased ? "is-purchased" : "is-wanted"}">
+                <span class="profile-shelf-card-dot" aria-hidden="true"></span>
+                ${item.purchased ? "Found" : "Hunting"}
+              </span>
+            `
+            : ""
+        }
+      </div>
+      <div class="profile-shelf-card-body">
+        <p class="profile-shelf-card-line">${escapeHtml(item.line || (isWishlist ? "wishlist note" : "collection note"))}</p>
+        <h3>${escapeHtml(item.name || "Untitled doll")}</h3>
+        <p>${escapeHtml(item.note || (isWishlist ? "Waiting for the right moment." : "Part of the active shelf."))}</p>
+      </div>
+    </article>
+  `;
+  if (isWishlist && userId) {
+    return `
+      <button
+        class="profile-shelf-card-link"
+        type="button"
+        onclick="App.openWishlistItem('${userId}', '${item.id}')"
+        aria-label="Відкрити ${escapeHtml(item.name || "Wish List item")}"
+      >
+        ${cardMarkup}
+      </button>
+    `;
+  }
+  return cardMarkup;
+}
+
+function renderShelfPanel({ user, section, activeSection, items }) {
+  const isWishlist = section === "wishlist";
+  const wishlistTotal = user.wishlistDolls?.length || 0;
+  const foundCount = (user.wishlistDolls || []).filter((item) => item.purchased).length;
+  const waitingCount = Math.max(wishlistTotal - foundCount, 0);
+  const headline = isWishlist ? "Wish List" : "Collection";
+  const description = isWishlist
+    ? "Те, що ще шукається, і те, що вже вдалося знайти."
+    : "Спокійна вітрина профілю: тільки твоя колекція, без зайвого шуму.";
+  const summary = isWishlist
+    ? `${foundCount} з ${wishlistTotal} знайдено`
+    : `${items.length} на полці`;
+  return `
+    <section class="profile-shelf-panel ${activeSection === section ? "is-active" : ""}" aria-label="${headline}">
+      <div class="profile-shelf-panel-head">
+        <div class="profile-shelf-panel-copy">
+          <span class="profile-shelf-kicker">${isWishlist ? "Collector hunt" : "Collector shelf"}</span>
+          <h2>${headline}</h2>
+          <p>${description}</p>
+        </div>
+        ${
+          isWishlist
+            ? `<button class="profile-shelf-add-button" type="button" onclick="App.openWishlistCreate('${user.id}')" aria-label="Додати в wish list">${navIcon("plus")}</button>`
+            : `<button class="profile-shelf-add-button is-disabled" type="button" aria-label="Додати в collection" disabled>${navIcon("plus")}</button>`
+        }
+      </div>
+      ${isWishlist ? `<div class="profile-shelf-panel-actions"><span class="profile-shelf-panel-count">${escapeHtml(summary)}</span></div>` : ""}
+      ${
+        isWishlist
+          ? `
+            <div class="wishlist-progress" aria-label="Прогрес wish list">
+              <div class="wishlist-progress-bar">
+                <span style="width: ${(foundCount / Math.max(wishlistTotal, 1)) * 100}%"></span>
+              </div>
+              <p><strong>${foundCount}</strong> знайдено, <strong>${waitingCount}</strong> ще шукаються.</p>
+            </div>
+          `
+          : ``
+      }
+      ${
+        items.length
+          ? `<div class="profile-shelf-grid">${items.map((item) => renderShelfCard(item, section, user.id)).join("")}</div>`
+          : emptyState(isWishlist ? "Wish List ще порожній." : "Колекція ще не заповнена.")
+      }
+    </section>
+  `;
+}
+
+function toggleWishlistStatus(userId, itemId) {
+  const user = findUser(userId);
+  const item = user?.wishlistDolls?.find((entry) => entry.id === itemId);
+  if (!user || !item) return;
+  item.purchased = !item.purchased;
+  item.priceUpdatedAt = new Date().toISOString();
+  saveState();
+  render();
+}
+
+function updateWishlistDraftField(field, value) {
+  wishlistCreateDraft[field] = String(value || "");
+  renderWishlistCreateSuggestions(field);
+  const submit = document.querySelector(".wishlist-create-submit");
+  if (submit) {
+    submit.disabled = !wishlistCreateReady();
+    submit.classList.toggle("is-disabled", !wishlistCreateReady());
+  }
+}
+
+function applyWishlistSuggestion(field, value) {
+  const decoded = decodeURIComponent(String(value || ""));
+  wishlistCreateDraft[field] = decoded;
+  const input = document.querySelector(`.wishlist-create-form [name="${field}"]`);
+  if (input) input.value = decoded;
+  const container = document.querySelector(`[data-wishlist-suggestions="${field}"]`);
+  if (container) {
+    container.innerHTML = "";
+    container.classList.add("hidden");
+  }
+  const submit = document.querySelector(".wishlist-create-submit");
+  if (submit) {
+    submit.disabled = !wishlistCreateReady();
+    submit.classList.toggle("is-disabled", !wishlistCreateReady());
+  }
+}
+
+function toggleWishlistCondition() {
+  wishlistCreateDraft.condition = wishlistCreateDraft.condition === "used" ? "new" : "used";
+  render();
+}
+
+async function pickWishlistImage(event) {
+  const file = event.currentTarget.files?.[0];
+  if (!file) return;
+  wishlistCreateDraft.image = await fileToDataUrl(file);
+  render();
+}
+
+function publishWishlistItem(event, userId) {
+  event.preventDefault();
+  const user = findUser(userId);
+  if (!user || !wishlistCreateReady()) return;
+  const nextItem = buildWishlistDraftItem(user);
+  user.wishlistDolls = [nextItem, ...(user.wishlistDolls || [])];
+  saveState();
+  wishlistCreateDraft = emptyWishlistDraft();
+  routeTo(wishlistItemHref(userId, nextItem.id));
+}
+
+function renderProfile(id, section = "collection", activeWishId = "", createMode = "") {
   const user = findUser(id);
   const me = currentUser();
   if (!user || user.blocked) {
+    document.body.classList.remove("has-modal");
     renderShell(emptyState("Цей профіль недоступний."));
     return;
   }
 
+  const activeSection = normalizeProfileSection(section);
+  const activeIndex = shelfSectionIndex(activeSection);
   const own = me?.id === user.id;
   const isFollowing = me?.following.includes(user.id);
   const posts = state.posts
     .filter((post) => post.userId === user.id)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const totalLikes = posts.reduce((sum, post) => sum + post.likes.length, 0);
   const location = [user.country, user.city].filter(Boolean).join(", ");
+  const collectionDolls = user.collectionDolls || [];
+  const wishlistDolls = user.wishlistDolls || [];
+  const foundWishlist = wishlistDolls.filter((item) => item.purchased).length;
+  const shelfStatus = `${collectionDolls.length} на полці • ${wishlistDolls.length - foundWishlist} ще шукаються`;
+  const activeWishItem =
+    activeSection === "wishlist" ? wishlistDolls.find((item) => item.id === activeWishId) || null : null;
+  const creatingWishlist = activeSection === "wishlist" && createMode === "wishlist";
+  document.body.classList.toggle("has-modal", Boolean(activeWishItem || creatingWishlist));
 
   renderShell(`
     <section class="profile-page">
@@ -1622,9 +2499,11 @@ function renderProfile(id) {
           <p class="profile-location">${escapeHtml(location || "Колекціонер")}</p>
           <h1>${escapeHtml(user.nickname)}</h1>
           <p class="profile-bio">${escapeHtml(user.bio || "Поки без опису.")}</p>
+          <p class="profile-collector-signal">${escapeHtml(shelfStatus)}</p>
           <div class="stats profile-stats">
-            <span class="stat"><strong>${totalLikes}</strong><span class="muted">Likes</span></span>
-            <span class="stat"><strong>${posts.length}</strong><span class="muted">Posts</span></span>
+            <span class="stat"><strong>${collectionDolls.length}</strong><span class="muted">Collection</span></span>
+            <span class="stat"><strong>${wishlistDolls.length}</strong><span class="muted">Wish List</span></span>
+            <span class="stat"><strong>${foundWishlist}</strong><span class="muted">Found</span></span>
             <span class="stat"><strong>${user.followers.length}</strong><span class="muted">Followers</span></span>
           </div>
           <div class="profile-socials">
@@ -1653,20 +2532,58 @@ function renderProfile(id) {
                 <h3>Интересы</h3>
                 ${tagList(user.interests)}
               </div>
+              <div class="profile-info-item">
+                <h3>Пости та shelf stories</h3>
+                <p>${posts.length ? `${posts.length} публікацій уже прив'язані до цього профілю.` : "Поки що без публікацій, але профіль уже працює як особиста колекційна вітрина."}</p>
+              </div>
             </div>
           </details>
         </div>
-      </div>
 
-      <div class="profile-posts">
-        ${
-          posts.length
-            ? `<div class="post-grid">${posts.map(renderPostTile).join("")}</div>`
-            : emptyState("Тут пока нет публикаций.")
-        }
+        <div class="profile-shelf-shell">
+          <div class="profile-shelf-nav">
+            <div class="profile-shelf-tabs" role="tablist" aria-label="Profile shelf sections">
+              ${PROFILE_SHELF_SECTIONS.map((panel) => {
+                const active = panel === activeSection ? "active" : "";
+                const label = panel === "wishlist" ? "Wish List" : "Collection";
+                return `<a class="profile-shelf-tab ${active}" href="${profileShelfHref(user.id, panel)}" role="tab" aria-selected="${panel === activeSection ? "true" : "false"}">${label}</a>`;
+              }).join("")}
+            </div>
+            <div class="profile-shelf-swipe-note">
+              <span class="profile-shelf-swipe-dot" aria-hidden="true"></span>
+              однією рукою: просто свайпни
+            </div>
+          </div>
+
+          <div
+            class="profile-shelf-stage"
+            data-user-id="${user.id}"
+            data-index="${activeIndex}"
+            onpointerdown="App.startProfileShelfSwipe(event)"
+            onpointermove="App.moveProfileShelfSwipe(event)"
+            onpointerup="App.endProfileShelfSwipe(event)"
+            onpointercancel="App.cancelProfileShelfSwipe(event)"
+          >
+            <div class="profile-shelf-track" style="transform: translateX(calc(-${activeIndex * 100}% + var(--profile-swipe-offset, 0px)));">
+              ${renderShelfPanel({ user, section: "collection", activeSection, items: collectionDolls })}
+              ${renderShelfPanel({ user, section: "wishlist", activeSection, items: wishlistDolls })}
+            </div>
+          </div>
+
+          <div class="profile-shelf-pager" aria-hidden="true">
+            ${PROFILE_SHELF_SECTIONS.map((panel) => `<span class="profile-shelf-pager-dot ${panel === activeSection ? "active" : ""}"></span>`).join("")}
+          </div>
+        </div>
       </div>
     </section>
+    ${renderWishlistFocusModal(user, activeWishItem)}
+    ${creatingWishlist ? renderWishlistCreateModal(user) : ""}
   `);
+  if (creatingWishlist) {
+    renderWishlistCreateSuggestions("brand");
+    renderWishlistCreateSuggestions("collectionName");
+    renderWishlistCreateSuggestions("name");
+  }
 }
 
 function socialLinks(user) {
@@ -2141,13 +3058,6 @@ function renderNotificationsPage() {
   const notifications = visibleNotifications(user.id);
   renderShell(`
     <section class="notification-page">
-      <div class="discussion-topbar notification-topbar">
-        <div>
-          <span class="eyebrow">Сповіщення</span>
-          <h2>Лайки, коментарі та відповіді</h2>
-        </div>
-        <a class="ghost-button small" href="#/feed">До стрічки</a>
-      </div>
       ${
         notifications.length
           ? `<div class="notification-list">${notifications.map(renderNotificationCard).join("")}</div>`
@@ -2187,8 +3097,8 @@ function renderNotificationCard(notification) {
   };
   const copy = kinds[notification.type];
   return `
-    <a class="notification-card" href="${notificationHref(notification)}">
-      ${renderNotificationThumb(notification, post, discussion)}
+    <a class="notification-card ${post ? "notification-card--with-post" : ""}" href="${notificationHref(notification)}">
+      <span class="notification-avatar">${avatar(actor, "small")}</span>
       <div class="notification-copy">
         <div class="notification-meta">
           <span class="notification-pill">${escapeHtml(copy.pill)}</span>
@@ -2197,22 +3107,15 @@ function renderNotificationCard(notification) {
         <strong>${escapeHtml(copy.title)}</strong>
         <p>${escapeHtml(copy.preview)}</p>
       </div>
+      ${post ? renderNotificationPostThumb(post) : ""}
     </a>
   `;
 }
 
-function renderNotificationThumb(notification, post, discussion) {
-  if (post) {
-    return `
-      <span class="notification-thumb">
-        ${renderMedia(post.images?.[0] || HERO_IMAGE, "notification-thumb-media", "Мініатюра посту", post.crops?.[0])}
-      </span>
-    `;
-  }
+function renderNotificationPostThumb(post) {
   return `
-    <span class="notification-thumb notification-thumb--thread" aria-hidden="true">
-      <span>Клуб</span>
-      <strong>${escapeHtml(shortenText(discussion?.title || "Ветка", 20))}</strong>
+    <span class="notification-thumb">
+      ${renderMedia(post.images?.[0] || HERO_IMAGE, "notification-thumb-media", "Мініатюра посту", post.crops?.[0])}
     </span>
   `;
 }
@@ -3454,19 +4357,98 @@ function handleDrawerClick(event) {
   if (summary.dataset.dragged === "true") event.preventDefault();
 }
 
+function swipeEventPoint(event) {
+  const touch = event.touches?.[0] || event.changedTouches?.[0];
+  return {
+    x: touch?.clientX ?? event.clientX ?? 0,
+    y: touch?.clientY ?? event.clientY ?? 0,
+  };
+}
+
+function startProfileShelfSwipe(event) {
+  const stage = event.currentTarget;
+  const point = swipeEventPoint(event);
+  stage.dataset.startX = String(point.x);
+  stage.dataset.startY = String(point.y);
+  stage.dataset.lock = "";
+  stage.dataset.dragged = "false";
+  stage.classList.add("is-swiping");
+}
+
+function moveProfileShelfSwipe(event) {
+  const stage = event.currentTarget;
+  if (!stage.dataset.startX || !stage.dataset.startY) return;
+  const point = swipeEventPoint(event);
+  const deltaX = point.x - Number(stage.dataset.startX);
+  const deltaY = point.y - Number(stage.dataset.startY);
+  if (!stage.dataset.lock) {
+    if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
+    stage.dataset.lock = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
+  }
+  if (stage.dataset.lock !== "x") return;
+  stage.dataset.dragged = Math.abs(deltaX) > 12 ? "true" : "false";
+  const currentIndex = Number(stage.dataset.index || 0);
+  const isFirst = currentIndex === 0 && deltaX > 0;
+  const isLast = currentIndex === PROFILE_SHELF_SECTIONS.length - 1 && deltaX < 0;
+  const offset = isFirst || isLast ? deltaX * 0.32 : deltaX;
+  stage.style.setProperty("--profile-swipe-offset", `${offset}px`);
+  if (event.cancelable) event.preventDefault();
+}
+
+function endProfileShelfSwipe(event) {
+  const stage = event.currentTarget;
+  const point = swipeEventPoint(event);
+  const startX = Number(stage.dataset.startX || point.x);
+  const deltaX = point.x - startX;
+  const currentIndex = Number(stage.dataset.index || 0);
+  let nextIndex = currentIndex;
+
+  if (stage.dataset.lock === "x" && Math.abs(deltaX) > 64) {
+    nextIndex = Math.max(0, Math.min(PROFILE_SHELF_SECTIONS.length - 1, currentIndex + (deltaX < 0 ? 1 : -1)));
+  }
+
+  stage.classList.remove("is-swiping");
+  stage.style.setProperty("--profile-swipe-offset", "0px");
+
+  const userId = stage.dataset.userId;
+  window.setTimeout(() => {
+    delete stage.dataset.startX;
+    delete stage.dataset.startY;
+    delete stage.dataset.lock;
+    delete stage.dataset.dragged;
+  }, 0);
+
+  if (userId && nextIndex !== currentIndex) {
+    routeTo(profileShelfHref(userId, PROFILE_SHELF_SECTIONS[nextIndex]));
+  }
+}
+
+function cancelProfileShelfSwipe(event) {
+  const stage = event.currentTarget;
+  stage.classList.remove("is-swiping");
+  stage.style.setProperty("--profile-swipe-offset", "0px");
+  delete stage.dataset.startX;
+  delete stage.dataset.startY;
+  delete stage.dataset.lock;
+  delete stage.dataset.dragged;
+}
+
 function render() {
   const hash = getHash();
   const [path] = hash.split("?");
+  const params = getHashQueryParams();
   const parts = path.replace("#/", "").split("/");
   const screen = parts[0] || "feed";
   const id = parts[1];
+  const section = parts[2];
+  document.body.classList.remove("has-modal");
 
   if (screen !== "create-post") stopCreateCamera();
 
   if (screen === "login") return renderLogin();
   if (screen === "register") return renderRegister();
   if (screen === "onboarding") return renderOnboarding();
-  if (screen === "profile") return renderProfile(id);
+  if (screen === "profile") return renderProfile(id, section, params.get("wish") || "", params.get("create") || "");
   if (screen === "edit-profile") return renderEditProfile();
   if (screen === "create-post") return renderCreatePost();
   if (screen === "post") return renderPostPage(id);
@@ -3504,16 +4486,28 @@ window.App = {
   search,
   setCreateCropScale,
   startDrawerPull,
+  startProfileShelfSwipe,
   moveDrawerPull,
+  moveProfileShelfSwipe,
   endDrawerPull,
+  endProfileShelfSwipe,
   cancelDrawerPull,
+  cancelProfileShelfSwipe,
   handleDrawerClick,
   moveCreateCropDrag,
   addCreateTag,
   openCreateCapture,
   openCreateGallery,
   openCreateDetails,
+  openWishlistItem,
+  openWishlistCreate,
+  closeWishlistCreate,
   previewCreateMedia,
+  pickWishlistImage,
+  updateWishlistDraftField,
+  applyWishlistSuggestion,
+  toggleWishlistCondition,
+  publishWishlistItem,
   drawerEventY,
   removeDiscussionTag,
   removeCreateTag,
@@ -3525,6 +4519,7 @@ window.App = {
   toggleDiscussionLike,
   toggleFollow,
   toggleLike,
+  toggleWishlistStatus,
 };
 
 function renderWithTransition() {
