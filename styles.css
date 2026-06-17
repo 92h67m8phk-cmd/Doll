@@ -253,8 +253,8 @@ a {
 .like-button__icon {
   display: inline-grid;
   place-items: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.28rem;
+  height: 1.28rem;
   line-height: 1;
 }
 
@@ -267,10 +267,10 @@ a {
 .like-heart--outline {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.88;
+  opacity: 0.92;
 }
 
 .like-heart--fill {
