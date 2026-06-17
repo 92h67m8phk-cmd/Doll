@@ -92,6 +92,23 @@ const TOY_CHARACTERS = [
   buildToyTag("character", "Twyla", "Твайла", "Твайла"),
   buildToyTag("character", "Catty Noir", "Кэтти Нуар", "Кетті Нуар"),
   buildToyTag("character", "Howleen Wolf", "Хоулин Вульф", "Говлін Вульф"),
+  buildToyTag("character", "Clawd Wolf", "Клод Вульф", "Клод Вульф"),
+  buildToyTag("character", "Heath Burns", "Хит Бёрнс", "Гіт Бернс"),
+  buildToyTag("character", "Manny Taur", "Мэнни Таур", "Менні Таур"),
+  buildToyTag("character", "Iris Clops", "Айрис Клопс", "Айріс Клопс"),
+  buildToyTag("character", "Catrine DeMew", "Катрин ДеМяу", "Катрін ДеМяу"),
+  buildToyTag("character", "Gigi Grant", "Джиджи Грант", "ДжіДжі Грант"),
+  buildToyTag("character", "Whisp Grant", "Висп Грант", "Вісп Грант"),
+  buildToyTag("character", "Sirena Von Boo", "Сирена Вон Бу", "Сірена Вон Бу"),
+  buildToyTag("character", "Bonita Femur", "Бонита Фемур", "Боніта Фемур"),
+  buildToyTag("character", "Avea Trotter", "Авеа Троттер", "Авеа Троттер"),
+  buildToyTag("character", "Kala Mer'ri", "Кала Мерри", "Кала Меррі", ["kala merri"]),
+  buildToyTag("character", "Peri and Pearl Serpentine", "Пери и Перл Серпентин", "Пері та Перл Серпентін"),
+  buildToyTag("character", "Moanica D'Kay", "Моника Д'Кей", "Моніка Д'Кей"),
+  buildToyTag("character", "Ari Hauntington", "Ари Хонтингтон", "Арі Гонтінгтон"),
+  buildToyTag("character", "Silvi Timberwolf", "Сильви Тимбервульф", "Сільві Тімбервульф"),
+  buildToyTag("character", "Dayna Treasura Jones", "Дэйна Трежера Джонс", "Дейна Трежера Джонс"),
+  buildToyTag("character", "Posea Reef", "Посеа Риф", "Посеа Ріф"),
   buildToyTag("character", "Rochelle Goyle", "Рошель Гойл", "Рошель Гойл"),
   buildToyTag("character", "Jane Boolittle", "Джейн Булиттл", "Джейн Булітл"),
   buildToyTag("character", "Elissabat", "Эллисабэт", "Еллісабет"),
@@ -212,6 +229,29 @@ const TOY_COLLECTIONS = [
   buildToyTag("collection", "I Heart Fashion", "Ай Харт Фэшн", "Ай Гарт Фешн"),
   buildToyTag("collection", "Coffin Bean", "Коффин Бин", "Коффін Бін"),
   buildToyTag("collection", "Dot Dead Gorgeous", "Дот Дэд Горджес", "Дот Дед Горджес"),
+  buildToyTag("collection", "School's Out", "Скулз Аут", "Скулз Аут"),
+  buildToyTag("collection", "Classroom", "Классрум", "Класрум"),
+  buildToyTag("collection", "Create-a-Monster", "Криейт-а-Монстер", "Кріейт-а-Монстер"),
+  buildToyTag("collection", "Dance Class", "Дэнс Класс", "Денс Клас"),
+  buildToyTag("collection", "Die-ner", "Дай-нер", "Дай-нер"),
+  buildToyTag("collection", "Getting Ghostly", "Геттинг Гостли", "Геттінг Гостлі"),
+  buildToyTag("collection", "Ghoulebrities in Londoom", "Гулебритиз ин Лондум", "Гулебрітіс у Лондумі"),
+  buildToyTag("collection", "Gloom and Bloom", "Глум энд Блум", "Глум енд Блум"),
+  buildToyTag("collection", "Maul Monsteristas", "Мол Монстеристас", "Мол Монстерістас"),
+  buildToyTag("collection", "Power Ghouls", "Пауэр Гулс", "Пауер Гулз"),
+  buildToyTag("collection", "Scarnival", "Скарнивал", "Скарнівал"),
+  buildToyTag("collection", "Student Disembody Council", "Студент Дисэмбоди Каунсил", "Студент Дісембоді Каунсіл"),
+  buildToyTag("collection", "Swim Class", "Суим Класс", "Свім Клас"),
+  buildToyTag("collection", "Zombie Shake", "Зомби Шейк", "Зомбі Шейк"),
+  buildToyTag("collection", "Photo Booth Ghouls", "Фото Бут Гулс", "Фото Бут Гулз"),
+  buildToyTag("collection", "Ghoul Spirit", "Гул Спирит", "Гул Спіріт"),
+  buildToyTag("collection", "Friday Night Frights", "Фрайдей Найт Фрайтс", "Фрайдей Найт Фрайтс"),
+  buildToyTag("collection", "Home Ick", "Хоум Ик", "Гоум Ік"),
+  buildToyTag("collection", "Monsteristas", "Монстеристас", "Монстерістас"),
+  buildToyTag("collection", "Faboolous Pets", "Фабулус Петс", "Фабулус Петс"),
+  buildToyTag("collection", "Bite in the Park", "Байт ин зе Парк", "Байт ін зе Парк"),
+  buildToyTag("collection", "Skulltimate Roller Maze", "Скултимейт Роллер Мейз", "Скалтимейт Роллер Мейз"),
+  buildToyTag("collection", "Monsteristas Secrets", "Монстеристас Сикретс", "Монстерістас Сікретс"),
   buildToyTag("collection", "Series 1", "Серия 1", "Серія 1"),
   buildToyTag("collection", "Series 2", "Серия 2", "Серія 2"),
   buildToyTag("collection", "Series 3", "Серия 3", "Серія 3"),
@@ -575,6 +615,10 @@ let createSelectedTags = [];
 let createTagQuery = "";
 let createTagError = "";
 let createTagLocale = "uk";
+let discussionSelectedTags = [];
+let discussionTagQuery = "";
+let discussionTagError = "";
+let discussionTagLocale = "uk";
 const DEFAULT_CROP = { x: 50, y: 50, scale: 1 };
 let lastMobileNavIndex = null;
 let didInitialRender = false;
@@ -901,13 +945,13 @@ function searchableTagText(tag) {
   return compactTagValue(String(tag || "").replace(/[^a-z0-9а-яіїєґ"'&+\- ]/gi, " "));
 }
 
-function detectTagLanguage(value = "") {
+function detectTagLanguage(value = "", fallbackLocale = "uk") {
   const source = String(value || "");
   if (/[a-z]/i.test(source) && !/[а-яіїєґёыэъ]/i.test(source)) return "en";
   if (/[іїєґ]/i.test(source)) return "uk";
   if (/[ёыэъ]/i.test(source)) return "ru";
-  if (/[а-я]/i.test(source)) return createTagLocale === "en" ? "uk" : createTagLocale;
-  return createTagLocale || "uk";
+  if (/[а-я]/i.test(source)) return fallbackLocale === "en" ? "uk" : fallbackLocale;
+  return fallbackLocale || "uk";
 }
 
 function displayTagLabel(tag, locale = "uk") {
@@ -927,11 +971,11 @@ function tagSuggestionScore(tag, query) {
   return -1;
 }
 
-function createTagSuggestions(query = "") {
+function tagSuggestionsFor(query = "", selectedTags = [], currentLocale = "uk") {
   const needle = searchableTagText(query);
   if (!needle) return [];
-  const locale = detectTagLanguage(query);
-  return TOY_TAG_DICTIONARY.filter((entry) => !createSelectedTags.includes(entry.canonical))
+  const locale = detectTagLanguage(query, currentLocale);
+  return TOY_TAG_DICTIONARY.filter((entry) => !selectedTags.includes(entry.canonical))
     .map((entry) => ({
       canonical: entry.canonical,
       label: entry.labels[locale] || entry.labels.en,
@@ -941,6 +985,14 @@ function createTagSuggestions(query = "") {
     .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
     .slice(0, 3)
     .map((item) => ({ canonical: item.canonical, label: item.label }));
+}
+
+function createTagSuggestions(query = "") {
+  return tagSuggestionsFor(query, createSelectedTags, createTagLocale);
+}
+
+function discussionTagSuggestions(query = "") {
+  return tagSuggestionsFor(query, discussionSelectedTags, discussionTagLocale);
 }
 
 function normalizeTerm(value = "") {
@@ -1045,6 +1097,65 @@ function recommendationScore(post, context) {
   return score;
 }
 
+function collectUserDiscussionBehaviorTags(user) {
+  const counts = new Map();
+  const bump = (tag, weight = 1) => {
+    const normalized = normalizeTerm(tag);
+    if (!normalized) return;
+    counts.set(normalized, (counts.get(normalized) || 0) + weight);
+  };
+
+  state.discussions.forEach((discussion) => {
+    if ((discussion.likes || []).includes(user.id)) {
+      (discussion.tags || []).forEach((tag) => bump(tag, 2));
+    }
+    if ((discussion.replies || []).some((reply) => reply.userId === user.id)) {
+      (discussion.tags || []).forEach((tag) => bump(tag, 2));
+    }
+  });
+
+  state.users
+    .filter((candidate) => user.following.includes(candidate.id))
+    .forEach((candidate) => {
+      (candidate.interests || []).forEach((tag) => bump(tag, 1));
+    });
+
+  return counts;
+}
+
+function buildDiscussionRecommendationContext(user) {
+  return {
+    user,
+    followingIds: new Set(user.following || []),
+    interestTerms: uniqueNormalizedTerms(user.interests || []),
+    discussionBehaviorTags: collectUserDiscussionBehaviorTags(user),
+  };
+}
+
+function discussionRecommendationScore(discussion, context) {
+  const { user, followingIds, interestTerms, discussionBehaviorTags } = context;
+  const author = discussionAuthor(discussion);
+  if (!author || author.blocked) return Number.NEGATIVE_INFINITY;
+
+  const discussionTerms = uniqueNormalizedTerms([
+    ...(discussion.tags || []),
+    ...(author.interests || []),
+    discussion.title,
+  ]);
+  let score = 0;
+  if (discussion.userId === user.id) score += 8;
+  if (followingIds.has(discussion.userId)) score += 28;
+  score += countTermMatches(interestTerms, discussionTerms) * 18;
+
+  discussionTerms.forEach((term) => {
+    score += Math.min(discussionBehaviorTags.get(term) || 0, 4) * 5;
+  });
+
+  score += Math.min((discussion.likes?.length || 0) * 2 + (discussion.replies?.length || 0) * 3, 14);
+  score += recommendationFreshnessScore(discussion.createdAt);
+  return score;
+}
+
 function isVideoMedia(src = "") {
   return String(src).startsWith("data:video/");
 }
@@ -1128,7 +1239,7 @@ function navLink(hash, label) {
   return `<a href="${hash}" class="${active}">${label}</a>`;
 }
 
-function navIcon(name) {
+function navIcon(name, badgeCount = 0) {
   const icons = {
     home: `
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1151,6 +1262,11 @@ function navIcon(name) {
         <path d="M5.3 12h13.4"></path>
       </svg>
     `,
+    heart: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.435 4.582a5.94 5.94 0 0 0-8.39 0L12 5.626l-1.046-1.044a5.94 5.94 0 1 0-8.39 8.39l1.046 1.045L12 22.414l8.389-8.398 1.046-1.045a5.94 5.94 0 0 0 0-8.389Z"></path>
+      </svg>
+    `,
     more: `
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="5.7" cy="12" r="1.35"></circle>
@@ -1159,7 +1275,12 @@ function navIcon(name) {
       </svg>
     `,
   };
-  return `<span class="tab-icon">${icons[name]}</span>`;
+  return `
+    <span class="tab-icon-wrap">
+      <span class="tab-icon">${icons[name]}</span>
+      ${badgeCount ? `<span class="tab-badge">${escapeHtml(badgeCount > 99 ? "99+" : String(badgeCount))}</span>` : ""}
+    </span>
+  `;
 }
 
 function tabAvatar(user) {
@@ -1178,18 +1299,20 @@ function mobileNavMatches(hash) {
   if (hash === "#/feed") return current === "#/feed" || current === "#/";
   if (hash === "#/search") return current === "#/search";
   if (hash === "#/create-post") return current === "#/create-post";
+  if (hash === "#/notifications") return current === "#/notifications" || current.startsWith("#/thread");
   if (hash === "#/admin") return current === "#/admin";
   return current === hash || current.startsWith(`${hash}/`);
 }
 
 function buildMobileNav(user) {
+  const alerts = notificationCount(user);
   const items = user
     ? [
         { hash: "#/feed", label: "Головна", icon: navIcon("home") },
         { hash: "#/search", label: "Пошук", icon: navIcon("people") },
         { hash: "#/create-post", label: "Створити", icon: navIcon("plus") },
+        { hash: "#/notifications", label: "Сповіщення", icon: navIcon("heart", alerts) },
         { hash: `#/profile/${user.id}`, label: "Профіль", icon: tabAvatar(user) },
-        ...(user.isAdmin ? [{ hash: "#/admin", label: "Адмін", icon: navIcon("more") }] : []),
       ]
     : [
         { hash: "#/login", label: "Вхід", icon: navIcon("home") },
@@ -1280,7 +1403,7 @@ function renderWelcome() {
         <div>
           <span class="eyebrow">Жива спільнота</span>
           <h2>Профілі, пости, пошук</h2>
-          <p>У демо вже є кілька колекціонерів, теги, коментарі, лайки, підписки та мінімальна адмінка.</p>
+          <p>У демо вже є кілька колекціонерів, теги, коментарі, лайки, підписки та окремий центр сповіщень.</p>
         </div>
         <div class="grid">
           ${members.map((user) => miniProfile(user)).join("")}
@@ -1306,6 +1429,7 @@ function miniProfile(user) {
 }
 
 function renderLogin() {
+  const visibleProfiles = state.users.filter((user) => user.id !== ADMIN_USER_ID || hasOwnerAccess());
   renderShell(`
     ${renderWelcome()}
     <section class="form-card">
@@ -1318,11 +1442,11 @@ function renderLogin() {
             Нікнейм
             <input name="nickname" list="known-users" placeholder="Наприклад, NikaShelf" required />
             <datalist id="known-users">
-              ${state.users.map((user) => `<option value="${escapeHtml(user.nickname)}"></option>`).join("")}
+              ${visibleProfiles.map((user) => `<option value="${escapeHtml(user.nickname)}"></option>`).join("")}
             </datalist>
           </label>
         </div>
-        <p class="notice">Швидкий старт: введіть <strong>NikaShelf</strong>, щоб відкрити профіль адміністратора і протестувати всі екрани.</p>
+        <p class="notice">Можна увійти в готовий демо-профіль або створити новий, щоб перевірити стрічку, пости і сповіщення.</p>
         <button class="button" type="submit">Увійти</button>
       </form>
     </section>
@@ -1831,6 +1955,7 @@ function renderCreatePost() {
 function renderPostPage(id) {
   const post = findPost(id);
   const me = currentUser();
+  const highlightedCommentId = new URLSearchParams(location.hash.split("?")[1] || "").get("comment") || "";
   if (!post) {
     renderShell(emptyState("Пост не знайдено."));
     return;
@@ -1839,9 +1964,9 @@ function renderPostPage(id) {
   const comments = post.comments
     .map((comment) => {
       const author = findUser(comment.userId);
-      const canDelete = me && (me.id === comment.userId || me.isAdmin);
+      const canDelete = me && (me.id === comment.userId || canAccessAdmin(me));
       return `
-        <div class="comment-row">
+        <div class="comment-row ${comment.id === highlightedCommentId ? "is-highlighted" : ""}">
           <div class="comment-meta">
             <strong>${escapeHtml(author?.nickname || "Користувач")}</strong>
             <span class="muted">${formatDate(comment.createdAt)}</span>
@@ -1887,12 +2012,26 @@ function renderPostPage(id) {
       </aside>
     </section>
   `);
+  if (highlightedCommentId) {
+    window.setTimeout(() => {
+      document.querySelector(".comment-row.is-highlighted")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 90);
+  }
 }
 
 function renderSearch() {
+  const user = currentUser();
+  if (!user) return renderLogin();
   const filters = Object.fromEntries(new URLSearchParams(location.hash.split("?")[1] || ""));
   const query = String(filters.q || "").trim().toLowerCase();
   const showComposer = filters.compose === "1";
+  if (showComposer) {
+    discussionSelectedTags = [];
+    discussionTagQuery = "";
+    discussionTagError = "";
+    discussionTagLocale = "uk";
+  }
+  const discussionRecommendationContext = buildDiscussionRecommendationContext(user);
   const discussions = state.discussions
     .filter((discussion) => !findUser(discussion.userId)?.blocked)
     .filter((discussion) => {
@@ -1909,7 +2048,11 @@ function renderSearch() {
         .toLowerCase()
         .includes(query);
     })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .sort((a, b) => {
+      const scoreDifference = discussionRecommendationScore(b, discussionRecommendationContext) - discussionRecommendationScore(a, discussionRecommendationContext);
+      if (scoreDifference !== 0) return scoreDifference;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   renderShell(`
     <section class="discussion-page">
@@ -1930,6 +2073,7 @@ function renderSearch() {
         <span class="eyebrow">Обсуждения</span>
         <h2>Лента веток кукольного клуба</h2>
         <p>Новости, релизы, вопросы по кастомам и находки сообщества в одном месте.</p>
+        <p class="muted">Ветки ранжируются по подпискам, интересам и скрытым тегам коллекций, брендов и персонажей.</p>
         ${
           remoteDiscussionsLoaded
             ? `<p class="online-memory online">Онлайн-память подключена.</p>`
@@ -1958,7 +2102,24 @@ function renderSearch() {
               </label>
               <label class="field">
                 Теги
-                <input name="tags" placeholder="Monster High, BJD, release" />
+                <input id="discussionTagsValue" name="tags" type="hidden" />
+                <div id="discussionTagComposer" class="tag-composer" aria-live="polite">
+                  <div id="discussionTagSelection" class="tag-composer__chips"></div>
+                  <div class="tag-composer__entry">
+                    <input
+                      id="discussionTagInput"
+                      class="tag-composer__input"
+                      type="text"
+                      placeholder="Бренд, персонаж або колекція"
+                      autocomplete="off"
+                      oninput="App.handleDiscussionTagInput(this.value)"
+                      onkeydown="App.handleDiscussionTagKeydown(event)"
+                    />
+                    <span id="discussionTagCounter" class="tag-composer__counter">0/5</span>
+                  </div>
+                  <div id="discussionTagSuggestions" class="tag-composer__suggestions hidden"></div>
+                </div>
+                <span id="discussionTagError" class="field-error hidden"></span>
               </label>
               <button class="button" type="submit">Опубликовать ветку</button>
             </form>
@@ -1971,9 +2132,93 @@ function renderSearch() {
       </div>
     </section>
   `);
+  if (showComposer) window.setTimeout(initDiscussionTagComposer, 0);
 }
 
-function renderDiscussionCard(discussion) {
+function renderNotificationsPage() {
+  const user = currentUser();
+  if (!user) return renderLogin();
+  const notifications = visibleNotifications(user.id);
+  renderShell(`
+    <section class="notification-page">
+      <div class="discussion-topbar notification-topbar">
+        <div>
+          <span class="eyebrow">Сповіщення</span>
+          <h2>Лайки, коментарі та відповіді</h2>
+        </div>
+        <a class="ghost-button small" href="#/feed">До стрічки</a>
+      </div>
+      ${
+        notifications.length
+          ? `<div class="notification-list">${notifications.map(renderNotificationCard).join("")}</div>`
+          : emptyState("Поки тихо. Нові лайки, коментарі та відповіді з'являться тут.")
+      }
+    </section>
+  `);
+}
+
+function renderNotificationCard(notification) {
+  const actor = findUser(notification.actorUserId);
+  const post = notification.postId ? findPost(notification.postId) : null;
+  const discussion = notification.discussionId ? findDiscussion(notification.discussionId) : null;
+  if (!actor || (!post && !discussion)) return "";
+
+  const kinds = {
+    "post-like": {
+      pill: "Лайк",
+      title: `${actor.nickname} вподобав(ла) вашу публікацію`,
+      preview: shortenText(post?.text || "", 96),
+    },
+    "post-comment": {
+      pill: "Коментар",
+      title: `${actor.nickname} залишив(ла) коментар до вашої публікації`,
+      preview: notification.previewText || shortenText(post?.text || "", 96),
+    },
+    "discussion-like": {
+      pill: "Лайк у клубі",
+      title: `${actor.nickname} вподобав(ла) вашу ветку кукольного клуба`,
+      preview: shortenText(discussion?.title || "", 96),
+    },
+    "discussion-reply": {
+      pill: "Відповідь у клубі",
+      title: `${actor.nickname} відповів(ла) у ветке кукольного клуба`,
+      preview: notification.previewText || shortenText(discussion?.text || "", 96),
+    },
+  };
+  const copy = kinds[notification.type];
+  return `
+    <a class="notification-card" href="${notificationHref(notification)}">
+      ${renderNotificationThumb(notification, post, discussion)}
+      <div class="notification-copy">
+        <div class="notification-meta">
+          <span class="notification-pill">${escapeHtml(copy.pill)}</span>
+          <span class="muted">${formatDate(notification.createdAt)}</span>
+        </div>
+        <strong>${escapeHtml(copy.title)}</strong>
+        <p>${escapeHtml(copy.preview)}</p>
+      </div>
+    </a>
+  `;
+}
+
+function renderNotificationThumb(notification, post, discussion) {
+  if (post) {
+    return `
+      <span class="notification-thumb">
+        ${renderMedia(post.images?.[0] || HERO_IMAGE, "notification-thumb-media", "Мініатюра посту", post.crops?.[0])}
+      </span>
+    `;
+  }
+  return `
+    <span class="notification-thumb notification-thumb--thread" aria-hidden="true">
+      <span>Клуб</span>
+      <strong>${escapeHtml(shortenText(discussion?.title || "Ветка", 20))}</strong>
+    </span>
+  `;
+}
+
+function renderDiscussionCard(discussion, options = {}) {
+  const { openComments = false, highlightReplyId = "" } = options;
   const author = discussionAuthor(discussion);
   const me = currentUser();
   const liked = me ? discussion.likes.includes(me.id) : false;
@@ -1991,7 +2236,6 @@ function renderDiscussionCard(discussion) {
           </div>
           <h3>${escapeHtml(discussion.title)}</h3>
           <p>${escapeHtml(discussion.text)}</p>
-          ${tagList(discussion.tags || [])}
         </div>
         <div class="thread-actions">
           ${renderLikeButton({
@@ -2002,7 +2246,7 @@ function renderDiscussionCard(discussion) {
           })}
         </div>
       </div>
-      <details class="thread-comments">
+      <details class="thread-comments" ${openComments ? "open" : ""}>
         <summary>
           <span>Комментарии: ${replies.length}</span>
           <span class="thread-open-label">Открыть ветку</span>
@@ -2014,7 +2258,7 @@ function renderDiscussionCard(discussion) {
                   .map((reply) => {
                     const replyAuthor = discussionReplyAuthor(reply);
                     return `
-                      <div class="thread-reply">
+                      <div class="thread-reply ${reply.id === highlightReplyId ? "is-highlighted" : ""}">
                         ${avatar(replyAuthor, "small")}
                         <div>
                           <div class="comment-meta">
@@ -2048,6 +2292,36 @@ function renderDiscussionCard(discussion) {
   `;
 }
 
+function renderThreadPage(id) {
+  const discussion = findDiscussion(id);
+  const params = new URLSearchParams(location.hash.split("?")[1] || "");
+  const highlightedReplyId = params.get("reply") || "";
+  const fromNotifications = params.get("from") === "notifications";
+  if (!discussion) {
+    renderShell(emptyState("Ветку не знайдено."));
+    return;
+  }
+  renderShell(`
+    <section class="discussion-page thread-detail-page">
+      <div class="discussion-topbar notification-topbar">
+        <a class="ghost-button small" href="${fromNotifications ? "#/notifications" : "#/search"}">Назад</a>
+        <div>
+          <span class="eyebrow">Кукольний клуб</span>
+          <h2>${escapeHtml(discussion.title)}</h2>
+        </div>
+      </div>
+      <div class="discussion-feed">
+        ${renderDiscussionCard(discussion, { openComments: true, highlightReplyId: highlightedReplyId })}
+      </div>
+    </section>
+  `);
+  if (highlightedReplyId) {
+    window.setTimeout(() => {
+      document.querySelector(".thread-reply.is-highlighted")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 90);
+  }
+}
+
 function renderUserResult(user) {
   const me = currentUser();
   const isFollowing = me?.following.includes(user.id);
@@ -2071,7 +2345,7 @@ function renderUserResult(user) {
 function renderAdmin() {
   const me = currentUser();
   if (!me) return renderLogin();
-  if (!me.isAdmin) {
+  if (!canAccessAdmin(me)) {
     renderShell(emptyState("Адмін-сторінка доступна лише адміністратору."));
     return;
   }
@@ -2329,6 +2603,138 @@ function validateCreateTags(options = {}) {
   }
   createTagError = "";
   renderCreateTagComposer();
+  return true;
+}
+
+function renderDiscussionTagComposer() {
+  const valueInput = document.querySelector("#discussionTagsValue");
+  const input = document.querySelector("#discussionTagInput");
+  const selection = document.querySelector("#discussionTagSelection");
+  const counter = document.querySelector("#discussionTagCounter");
+  const suggestions = document.querySelector("#discussionTagSuggestions");
+  const error = document.querySelector("#discussionTagError");
+  const composer = document.querySelector("#discussionTagComposer");
+  if (!input || !selection || !counter || !suggestions || !error || !composer) return;
+  const displayLocale = discussionTagQuery.trim() ? detectTagLanguage(discussionTagQuery, discussionTagLocale) : discussionTagLocale;
+
+  if (valueInput) valueInput.value = discussionSelectedTags.join(", ");
+
+  selection.innerHTML = discussionSelectedTags.length
+    ? discussionSelectedTags
+        .map(
+          (tag) => `
+            <button class="tag-composer__chip" type="button" onclick="App.removeDiscussionTag('${encodeURIComponent(tag)}')" aria-label="Прибрати тег ${escapeHtml(displayTagLabel(tag, displayLocale))}">
+              <span>${escapeHtml(displayTagLabel(tag, displayLocale))}</span>
+              <span aria-hidden="true">×</span>
+            </button>
+          `,
+        )
+        .join("")
+    : `<span class="tag-composer__empty">Оберіть до 5 тегів: бренд, персонажа або колекцію</span>`;
+
+  input.value = discussionTagQuery;
+  input.disabled = discussionSelectedTags.length >= 5;
+  input.placeholder = discussionSelectedTags.length >= 5 ? "Ліміт тегів досягнуто" : "Бренд, персонаж або колекція";
+  counter.textContent = `${discussionSelectedTags.length}/5`;
+
+  const matched = discussionSelectedTags.length >= 5 ? [] : discussionTagSuggestions(discussionTagQuery);
+  suggestions.innerHTML = matched
+    .map(
+      (item) => `
+        <button class="tag-composer__suggestion" type="button" onclick="App.addDiscussionTag('${encodeURIComponent(item.canonical)}')">
+          ${escapeHtml(item.label)}
+        </button>
+      `,
+    )
+    .join("");
+  suggestions.classList.toggle("hidden", !matched.length);
+
+  const hasError = Boolean(discussionTagError);
+  composer.classList.toggle("is-invalid", hasError);
+  error.textContent = discussionTagError;
+  error.classList.toggle("hidden", !hasError);
+}
+
+function initDiscussionTagComposer() {
+  renderDiscussionTagComposer();
+}
+
+function handleDiscussionTagInput(value) {
+  discussionTagQuery = String(value || "").replace(/^\s+/, "");
+  if (discussionTagQuery.trim()) discussionTagLocale = detectTagLanguage(discussionTagQuery, discussionTagLocale);
+  discussionTagError = "";
+  renderDiscussionTagComposer();
+}
+
+function addDiscussionTag(tag) {
+  const normalized = normalizePostTag(decodeURIComponent(String(tag || "")));
+  if (!normalized) {
+    discussionTagError = "Оберіть тег зі списку підказок.";
+    renderDiscussionTagComposer();
+    return;
+  }
+  if (discussionSelectedTags.includes(normalized)) {
+    discussionTagError = "Цей тег уже доданий.";
+    renderDiscussionTagComposer();
+    return;
+  }
+  if (discussionSelectedTags.length >= 5) {
+    discussionTagError = "Можна додати максимум 5 тегів.";
+    renderDiscussionTagComposer();
+    return;
+  }
+  discussionSelectedTags.push(normalized);
+  discussionTagQuery = "";
+  discussionTagError = "";
+  renderDiscussionTagComposer();
+  document.querySelector("#discussionTagInput")?.focus();
+}
+
+function removeDiscussionTag(tag) {
+  const normalized = decodeURIComponent(String(tag || ""));
+  discussionSelectedTags = discussionSelectedTags.filter((item) => item !== normalized);
+  discussionTagError = "";
+  renderDiscussionTagComposer();
+  document.querySelector("#discussionTagInput")?.focus();
+}
+
+function handleDiscussionTagKeydown(event) {
+  if (event.key === "Backspace" && !discussionTagQuery && discussionSelectedTags.length) {
+    event.preventDefault();
+    removeDiscussionTag(discussionSelectedTags[discussionSelectedTags.length - 1]);
+    return;
+  }
+
+  if (event.key !== "Enter" && event.key !== ",") return;
+  event.preventDefault();
+
+  const exact = normalizePostTag(discussionTagQuery);
+  const nextTag = exact || discussionTagSuggestions(discussionTagQuery)[0]?.canonical;
+  if (nextTag) {
+    addDiscussionTag(nextTag);
+    return;
+  }
+
+  discussionTagError = "Оберіть тег зі списку підказок.";
+  renderDiscussionTagComposer();
+}
+
+function validateDiscussionTags(options = {}) {
+  const { focus = false } = options;
+  if (discussionTagQuery.trim()) {
+    discussionTagError = "Додайте вибраний тег зі списку або очистьте поле.";
+    renderDiscussionTagComposer();
+    if (focus) document.querySelector("#discussionTagInput")?.focus();
+    return false;
+  }
+  if (!discussionSelectedTags.length) {
+    discussionTagError = "Додайте хоча б один тег перед публікацією.";
+    renderDiscussionTagComposer();
+    if (focus) document.querySelector("#discussionTagInput")?.focus();
+    return false;
+  }
+  discussionTagError = "";
+  renderDiscussionTagComposer();
   return true;
 }
 
@@ -2655,7 +3061,11 @@ function login(event) {
   const nickname = new FormData(event.currentTarget).get("nickname").trim().toLowerCase();
   const user = state.users.find((item) => item.nickname.toLowerCase() === nickname);
   if (!user) {
-    alert("Профіль не знайдено. Спробуйте NikaShelf або створіть новий профіль.");
+    alert("Профіль не знайдено. Спробуйте інший нікнейм або створіть новий профіль.");
+    return;
+  }
+  if (user.id === ADMIN_USER_ID && !hasOwnerAccess()) {
+    alert("Цей службовий профіль прихований і недоступний для звичайного входу.");
     return;
   }
   state.currentUserId = user.id;
@@ -2732,9 +3142,24 @@ function toggleLike(postId) {
   const me = currentUser();
   const post = findPost(postId);
   if (!me || !post) return;
-  post.likes = post.likes.includes(me.id)
-    ? post.likes.filter((id) => id !== me.id)
-    : [...post.likes, me.id];
+  const liked = post.likes.includes(me.id);
+  post.likes = liked ? post.likes.filter((id) => id !== me.id) : [...post.likes, me.id];
+  if (liked) {
+    removeNotifications(
+      (notification) =>
+        notification.type === "post-like" &&
+        notification.postId === post.id &&
+        notification.actorUserId === me.id &&
+        notification.recipientUserId === post.userId,
+    );
+  } else {
+    createNotification({
+      type: "post-like",
+      recipientUserId: post.userId,
+      actorUserId: me.id,
+      postId: post.id,
+    });
+  }
   saveState();
   render();
 }
@@ -2786,11 +3211,21 @@ function addComment(event, postId) {
   if (!me || !post) return;
   const text = new FormData(event.currentTarget).get("comment").trim();
   if (!text) return;
-  post.comments.push({
+  const comment = {
     id: `c-${Date.now()}`,
     userId: me.id,
     text,
     createdAt: new Date().toISOString(),
+  };
+  post.comments.push(comment);
+  createNotification({
+    type: "post-comment",
+    recipientUserId: post.userId,
+    actorUserId: me.id,
+    postId: post.id,
+    commentId: comment.id,
+    previewText: text,
+    createdAt: comment.createdAt,
   });
   saveState();
   render();
@@ -2800,13 +3235,11 @@ async function createDiscussion(event) {
   event.preventDefault();
   const me = currentUser();
   if (!me) return;
+  if (!validateDiscussionTags({ focus: true })) return;
   const data = new FormData(event.currentTarget);
   const title = String(data.get("title") || "").trim();
   const text = String(data.get("text") || "").trim();
-  const tags = String(data.get("tags") || "")
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
+  const tags = discussionSelectedTags.slice(0, 5);
   if (!title || !text) return;
   const discussion = {
     id: `d-${Date.now()}`,
@@ -2847,6 +3280,19 @@ async function addDiscussionReply(event, discussionId) {
     createdAt: new Date().toISOString(),
   };
   discussion.replies.push(reply);
+  const recipients = new Set([discussion.userId, ...discussion.replies.map((item) => item.userId)]);
+  recipients.delete(me.id);
+  recipients.forEach((recipientUserId) => {
+    createNotification({
+      type: "discussion-reply",
+      recipientUserId,
+      actorUserId: me.id,
+      discussionId: discussion.id,
+      replyId: reply.id,
+      previewText: text,
+      createdAt: reply.createdAt,
+    });
+  });
   saveState();
   render();
   try {
@@ -2863,9 +3309,24 @@ async function toggleDiscussionLike(discussionId) {
   const me = currentUser();
   const discussion = findDiscussion(discussionId);
   if (!me || !discussion) return;
-  discussion.likes = discussion.likes.includes(me.id)
-    ? discussion.likes.filter((id) => id !== me.id)
-    : [...discussion.likes, me.id];
+  const liked = discussion.likes.includes(me.id);
+  discussion.likes = liked ? discussion.likes.filter((id) => id !== me.id) : [...discussion.likes, me.id];
+  if (liked) {
+    removeNotifications(
+      (notification) =>
+        notification.type === "discussion-like" &&
+        notification.discussionId === discussion.id &&
+        notification.actorUserId === me.id &&
+        notification.recipientUserId === discussion.userId,
+    );
+  } else {
+    createNotification({
+      type: "discussion-like",
+      recipientUserId: discussion.userId,
+      actorUserId: me.id,
+      discussionId: discussion.id,
+    });
+  }
   saveState();
   render();
   try {
@@ -2881,9 +3342,10 @@ function deleteComment(postId, commentId) {
   const post = findPost(postId);
   if (!me || !post) return;
   post.comments = post.comments.filter((comment) => {
-    const canDelete = me.id === comment.userId || me.isAdmin;
+    const canDelete = me.id === comment.userId || canAccessAdmin(me);
     return !(comment.id === commentId && canDelete);
   });
+  removeNotifications((notification) => notification.commentId === commentId);
   saveState();
   render();
 }
@@ -2900,8 +3362,9 @@ function reportPost(postId) {
 
 function deletePost(postId) {
   const me = currentUser();
-  if (!me?.isAdmin) return;
+  if (!canAccessAdmin(me)) return;
   state.posts = state.posts.filter((post) => post.id !== postId);
+  removeNotifications((notification) => notification.postId === postId);
   saveState();
   renderAdmin();
 }
@@ -2909,7 +3372,7 @@ function deletePost(postId) {
 function toggleBlockUser(userId) {
   const me = currentUser();
   const user = findUser(userId);
-  if (!me?.isAdmin || !user || user.id === me.id) return;
+  if (!canAccessAdmin(me) || !user || user.id === me.id) return;
   user.blocked = !user.blocked;
   saveState();
   renderAdmin();
@@ -3008,6 +3471,8 @@ function render() {
   if (screen === "create-post") return renderCreatePost();
   if (screen === "post") return renderPostPage(id);
   if (screen === "search") return renderSearch();
+  if (screen === "notifications") return renderNotificationsPage();
+  if (screen === "thread") return renderThreadPage(id);
   if (screen === "admin") return renderAdmin();
   return renderFeed();
 }
@@ -3023,8 +3488,11 @@ window.App = {
   deleteComment,
   deletePost,
   endCreateCropDrag,
+  addDiscussionTag,
   handleCreateTagInput,
   handleCreateTagKeydown,
+  handleDiscussionTagInput,
+  handleDiscussionTagKeydown,
   login,
   logout,
   register,
@@ -3047,6 +3515,7 @@ window.App = {
   openCreateDetails,
   previewCreateMedia,
   drawerEventY,
+  removeDiscussionTag,
   removeCreateTag,
   selectCreateMedia,
   selectCreatePreview,
