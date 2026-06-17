@@ -27,6 +27,40 @@ const AESTHETICS = [
   "minimal",
 ];
 
+const POST_TAG_CATALOG = [
+  "Barbie",
+  "Monster High",
+  "BJD",
+  "Blythe",
+  "Pullip",
+  "Rainbow High",
+  "vintage",
+  "handmade",
+  "custom",
+  "restoration",
+  "gothic",
+  "pastel",
+  "retro",
+  "kawaii",
+  "fantasy",
+  "realistic",
+  "cottage",
+  "minimal",
+  "shelf",
+  "display",
+  "outfit",
+  "face-up",
+  "repaint",
+  "release",
+  "news",
+  "advice",
+  "review",
+  "photography",
+  "miniature",
+  "collector",
+  "before after",
+];
+
 const DEFAULT_STATE = {
   currentUserId: "u-me",
   users: [
@@ -223,6 +257,9 @@ let createCameraStream = null;
 let createSelectedMediaItems = [];
 let createActiveMediaIndex = 0;
 let createCropDrag = null;
+let createSelectedTags = [];
+let createTagQuery = "";
+let createTagError = "";
 const DEFAULT_CROP = { x: 50, y: 50, scale: 1 };
 let lastMobileNavIndex = null;
 let didInitialRender = false;
@@ -443,6 +480,23 @@ function tagList(tags = [], tone = "") {
   return `<div class="tags">${tags
     .map((tag) => `<span class="tag ${tone}">${escapeHtml(tag)}</span>`)
     .join("")}</div>`;
+}
+
+function normalizePostTag(tag) {
+  const normalized = String(tag || "")
+    .trim()
+    .replace(/\s+/g, " ");
+  if (!normalized) return "";
+  return POST_TAG_CATALOG.find((item) => item.toLowerCase() === normalized.toLowerCase()) || "";
+}
+
+function createTagSuggestions(query = "") {
+  const needle = String(query || "").trim().toLowerCase();
+  if (!needle) return [];
+  const available = POST_TAG_CATALOG.filter((tag) => !createSelectedTags.includes(tag));
+  const startsWith = available.filter((tag) => tag.toLowerCase().startsWith(needle));
+  const contains = available.filter((tag) => !tag.toLowerCase().startsWith(needle) && tag.toLowerCase().includes(needle));
+  return [...startsWith, ...contains].slice(0, 3);
 }
 
 function isVideoMedia(src = "") {
@@ -1101,6 +1155,9 @@ function renderCreatePost() {
   if (!user) return renderLogin();
   createSelectedMediaItems = [];
   createActiveMediaIndex = 0;
+  createSelectedTags = [];
+  createTagQuery = "";
+  createTagError = "";
   renderShell(`
     <section class="create-studio" aria-label="Створення посту або історії">
       <form class="create-camera-form" onsubmit="App.createPost(event)">
@@ -1187,7 +1244,25 @@ function renderCreatePost() {
                 </label>
                 <label class="field">
                   Теги
-                  <input name="tags" placeholder="Monster High, restoration, advice" />
+                  <input id="createTagsValue" name="tags" type="hidden" />
+                  <div id="createTagComposer" class="tag-composer" aria-live="polite">
+                    <div id="createTagSelection" class="tag-composer__chips"></div>
+                    <div class="tag-composer__entry">
+                      <input
+                        id="createTagInput"
+                        class="tag-composer__input"
+                        type="text"
+                        placeholder="Почніть вводити тег"
+                        autocomplete="off"
+                        oninput="App.handleCreateTagInput(this.value)"
+                        onkeydown="App.handleCreateTagKeydown(event)"
+                      />
+                      <span id="createTagCounter" class="tag-composer__counter">0/5</span>
+                    </div>
+                    <div id="createTagSuggestions" class="tag-composer__suggestions hidden"></div>
+                  </div>
+                  <span class="field-note">Обов'язково: від 1 до 5 тегів. Після першої літери з'являться 3 підказки.</span>
+                  <span id="createTagError" class="field-error hidden"></span>
                 </label>
                 <button class="button" type="submit">Опублікувати</button>
               </div>
@@ -1197,7 +1272,10 @@ function renderCreatePost() {
       </form>
     </section>
   `);
-  window.setTimeout(initCreateStudio, 0);
+  window.setTimeout(() => {
+    initCreateStudio();
+    initCreateTagComposer();
+  }, 0);
 }
 
 function renderPostPage(id) {
@@ -1570,6 +1648,136 @@ async function initCreateStudio() {
     if (status) status.textContent = "Оберіть з галереї";
     fallback?.classList.add("is-visible");
   }
+}
+
+function renderCreateTagComposer() {
+  const valueInput = document.querySelector("#createTagsValue");
+  const input = document.querySelector("#createTagInput");
+  const selection = document.querySelector("#createTagSelection");
+  const counter = document.querySelector("#createTagCounter");
+  const suggestions = document.querySelector("#createTagSuggestions");
+  const error = document.querySelector("#createTagError");
+  const composer = document.querySelector("#createTagComposer");
+  if (!input || !selection || !counter || !suggestions || !error || !composer) return;
+
+  if (valueInput) valueInput.value = createSelectedTags.join(", ");
+
+  selection.innerHTML = createSelectedTags.length
+    ? createSelectedTags
+        .map(
+          (tag) => `
+            <button class="tag-composer__chip" type="button" onclick="App.removeCreateTag('${encodeURIComponent(tag)}')" aria-label="Прибрати тег ${escapeHtml(tag)}">
+              <span>${escapeHtml(tag)}</span>
+              <span aria-hidden="true">×</span>
+            </button>
+          `,
+        )
+        .join("")
+    : `<span class="tag-composer__empty">Оберіть до 5 тегів для рекомендацій і пошуку</span>`;
+
+  input.value = createTagQuery;
+  input.disabled = createSelectedTags.length >= 5;
+  input.placeholder = createSelectedTags.length >= 5 ? "Ліміт тегів досягнуто" : "Почніть вводити тег";
+  counter.textContent = `${createSelectedTags.length}/5`;
+
+  const matched = createSelectedTags.length >= 5 ? [] : createTagSuggestions(createTagQuery);
+  suggestions.innerHTML = matched
+    .map(
+      (tag) => `
+        <button class="tag-composer__suggestion" type="button" onclick="App.addCreateTag('${encodeURIComponent(tag)}')">
+          ${escapeHtml(tag)}
+        </button>
+      `,
+    )
+    .join("");
+  suggestions.classList.toggle("hidden", !matched.length);
+
+  const hasError = Boolean(createTagError);
+  composer.classList.toggle("is-invalid", hasError);
+  error.textContent = createTagError;
+  error.classList.toggle("hidden", !hasError);
+}
+
+function initCreateTagComposer() {
+  renderCreateTagComposer();
+}
+
+function handleCreateTagInput(value) {
+  createTagQuery = String(value || "").replace(/^\s+/, "");
+  createTagError = "";
+  renderCreateTagComposer();
+}
+
+function addCreateTag(tag) {
+  const normalized = normalizePostTag(decodeURIComponent(String(tag || "")));
+  if (!normalized) {
+    createTagError = "Оберіть тег зі списку підказок.";
+    renderCreateTagComposer();
+    return;
+  }
+  if (createSelectedTags.includes(normalized)) {
+    createTagError = "Цей тег уже доданий.";
+    renderCreateTagComposer();
+    return;
+  }
+  if (createSelectedTags.length >= 5) {
+    createTagError = "Можна додати максимум 5 тегів.";
+    renderCreateTagComposer();
+    return;
+  }
+  createSelectedTags.push(normalized);
+  createTagQuery = "";
+  createTagError = "";
+  renderCreateTagComposer();
+  document.querySelector("#createTagInput")?.focus();
+}
+
+function removeCreateTag(tag) {
+  const normalized = decodeURIComponent(String(tag || ""));
+  createSelectedTags = createSelectedTags.filter((item) => item !== normalized);
+  createTagError = "";
+  renderCreateTagComposer();
+  document.querySelector("#createTagInput")?.focus();
+}
+
+function handleCreateTagKeydown(event) {
+  if (event.key === "Backspace" && !createTagQuery && createSelectedTags.length) {
+    event.preventDefault();
+    removeCreateTag(createSelectedTags[createSelectedTags.length - 1]);
+    return;
+  }
+
+  if (event.key !== "Enter" && event.key !== ",") return;
+  event.preventDefault();
+
+  const exact = normalizePostTag(createTagQuery);
+  const nextTag = exact || createTagSuggestions(createTagQuery)[0];
+  if (nextTag) {
+    addCreateTag(nextTag);
+    return;
+  }
+
+  createTagError = "Оберіть тег зі списку підказок.";
+  renderCreateTagComposer();
+}
+
+function validateCreateTags(options = {}) {
+  const { focus = false } = options;
+  if (createTagQuery.trim()) {
+    createTagError = "Додайте вибраний тег зі списку або очистьте поле.";
+    renderCreateTagComposer();
+    if (focus) document.querySelector("#createTagInput")?.focus();
+    return false;
+  }
+  if (!createSelectedTags.length) {
+    createTagError = "Додайте хоча б один тег перед публікацією.";
+    renderCreateTagComposer();
+    if (focus) document.querySelector("#createTagInput")?.focus();
+    return false;
+  }
+  createTagError = "";
+  renderCreateTagComposer();
+  return true;
 }
 
 function openCreateGallery() {
@@ -1983,6 +2191,7 @@ async function createPost(event) {
   event.preventDefault();
   const me = currentUser();
   if (!me) return;
+  if (!validateCreateTags({ focus: true })) return;
   const form = event.currentTarget;
   const data = new FormData(form);
   const capturedImage = String(data.get("capturedImage") || "");
@@ -1996,10 +2205,7 @@ async function createPost(event) {
   const selectedImages = createMediaSources();
   const images = (selectedImages.length ? selectedImages : [capturedImage, ...uploadedImages].filter(Boolean)).slice(0, limit);
   const crops = createMediaCrops().slice(0, limit);
-  const tags = String(data.get("tags") || "")
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
+  const tags = createSelectedTags.slice(0, 5);
   if (postType === "story" && !tags.some((tag) => tag.toLowerCase() === "story")) tags.unshift("story");
   const post = {
     id: `p-${Date.now()}`,
@@ -2265,6 +2471,8 @@ window.App = {
   deleteComment,
   deletePost,
   endCreateCropDrag,
+  handleCreateTagInput,
+  handleCreateTagKeydown,
   login,
   logout,
   register,
@@ -2281,11 +2489,13 @@ window.App = {
   cancelDrawerPull,
   handleDrawerClick,
   moveCreateCropDrag,
+  addCreateTag,
   openCreateCapture,
   openCreateGallery,
   openCreateDetails,
   previewCreateMedia,
   drawerEventY,
+  removeCreateTag,
   selectCreateMedia,
   selectCreatePreview,
   startCreateCropDrag,

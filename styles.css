@@ -1055,6 +1055,131 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.07);
 }
 
+.field-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.field-error {
+  color: #bf4f72;
+  font-size: 0.82rem;
+  font-weight: 760;
+  line-height: 1.4;
+}
+
+.tag-composer {
+  border: 1px solid #dedede;
+  border-radius: 24px;
+  background: #fff;
+  padding: 0.8rem 0.9rem;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.tag-composer:focus-within {
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.07);
+}
+
+.tag-composer.is-invalid {
+  border-color: #d67d9e;
+  box-shadow: 0 0 0 4px rgba(214, 125, 158, 0.14);
+}
+
+.tag-composer__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.7rem;
+}
+
+.tag-composer__empty {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.tag-composer__chip {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #f0bfd2;
+  border-radius: 999px;
+  padding: 0.36rem 0.72rem;
+  background: #fff4f8;
+  color: #b5557f;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 760;
+}
+
+.tag-composer__entry {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tag-composer__input,
+.tag-composer__input:focus {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tag-composer__input {
+  flex: 1;
+  border-radius: 0;
+  font-weight: 650;
+}
+
+.tag-composer__input:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.tag-composer__counter {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 0.22rem 0.58rem;
+  background: #f6f2f4;
+  color: #8f7882;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.tag-composer__suggestions {
+  display: grid;
+  gap: 0.42rem;
+  margin-top: 0.72rem;
+}
+
+.tag-composer__suggestion {
+  display: flex;
+  min-height: 2.45rem;
+  align-items: center;
+  justify-content: flex-start;
+  border: 1px solid #eadfe4;
+  border-radius: 16px;
+  padding: 0.5rem 0.72rem;
+  background: #fff8fb;
+  color: #7f5c6b;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 760;
+  text-align: left;
+}
+
+.tag-composer__suggestion:hover {
+  border-color: #efbfd3;
+  background: #fff1f7;
+}
+
 .check-list {
   display: flex;
   flex-wrap: wrap;
