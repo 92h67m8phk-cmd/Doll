@@ -499,6 +499,108 @@ function createTagSuggestions(query = "") {
   return [...startsWith, ...contains].slice(0, 3);
 }
 
+function normalizeTerm(value = "") {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+function uniqueNormalizedTerms(values = []) {
+  return [...new Set(values.map(normalizeTerm).filter(Boolean))];
+}
+
+function countTermMatches(sourceTerms = [], targetTerms = []) {
+  if (!sourceTerms.length || !targetTerms.length) return 0;
+  const targetSet = new Set(targetTerms);
+  return sourceTerms.reduce((total, term) => total + (targetSet.has(term) ? 1 : 0), 0);
+}
+
+function collectUserBehaviorTags(user) {
+  const counts = new Map();
+  const bump = (tag, weight = 1) => {
+    const normalized = normalizeTerm(tag);
+    if (!normalized) return;
+    counts.set(normalized, (counts.get(normalized) || 0) + weight);
+  };
+
+  state.posts.forEach((post) => {
+    if (post.likes.includes(user.id)) {
+      (post.tags || []).forEach((tag) => bump(tag, 2));
+    }
+    if ((post.comments || []).some((comment) => comment.userId === user.id)) {
+      (post.tags || []).forEach((tag) => bump(tag, 1));
+    }
+  });
+
+  state.users
+    .filter((candidate) => user.following.includes(candidate.id))
+    .forEach((candidate) => {
+      (candidate.interests || []).forEach((tag) => bump(tag, 1));
+      (candidate.aesthetics || []).forEach((tag) => bump(tag, 1));
+    });
+
+  return counts;
+}
+
+function buildRecommendationContext(user) {
+  return {
+    user,
+    followingIds: new Set(user.following || []),
+    interestTerms: uniqueNormalizedTerms(user.interests || []),
+    aestheticTerms: uniqueNormalizedTerms(user.aesthetics || []),
+    behaviorTags: collectUserBehaviorTags(user),
+  };
+}
+
+function recommendationFreshnessScore(createdAt) {
+  const ageHours = Math.max(0, (Date.now() - new Date(createdAt).getTime()) / 36e5);
+  if (ageHours <= 24) return 14;
+  if (ageHours <= 72) return 10;
+  if (ageHours <= 168) return 6;
+  if (ageHours <= 336) return 3;
+  return 1;
+}
+
+function recommendationPopularityScore(post) {
+  return Math.min(12, (post.likes.length || 0) * 2 + (post.comments?.length || 0) * 3);
+}
+
+function recommendationScore(post, context) {
+  const { user, followingIds, interestTerms, aestheticTerms, behaviorTags } = context;
+  const author = findUser(post.userId);
+  if (!author || author.blocked) return Number.NEGATIVE_INFINITY;
+
+  const postTerms = uniqueNormalizedTerms([
+    ...(post.tags || []),
+    ...(author.interests || []),
+    ...(author.aesthetics || []),
+  ]);
+  const authorInterestTerms = uniqueNormalizedTerms(author.interests || []);
+  const authorAestheticTerms = uniqueNormalizedTerms(author.aesthetics || []);
+
+  let score = 0;
+  if (post.userId === user.id) score += 8;
+  if (followingIds.has(post.userId)) score += 34;
+
+  score += countTermMatches(interestTerms, postTerms) * 18;
+  score += countTermMatches(aestheticTerms, postTerms) * 14;
+  score += countTermMatches(interestTerms, authorInterestTerms) * 8;
+  score += countTermMatches(aestheticTerms, authorAestheticTerms) * 6;
+
+  postTerms.forEach((term) => {
+    score += Math.min(behaviorTags.get(term) || 0, 4) * 5;
+  });
+
+  if (!followingIds.has(post.userId) && countTermMatches([...interestTerms, ...aestheticTerms], postTerms) > 0) {
+    score += 6;
+  }
+
+  score += recommendationPopularityScore(post);
+  score += recommendationFreshnessScore(post.createdAt);
+  return score;
+}
+
 function isVideoMedia(src = "") {
   return String(src).startsWith("data:video/");
 }
@@ -838,12 +940,15 @@ function renderFeed() {
     return;
   }
 
-  const followingPosts = state.posts.filter((post) => user.following.includes(post.userId));
-  const posts = followingPosts.length ? followingPosts : state.posts;
-  const sortedPosts = posts
+  const recommendationContext = buildRecommendationContext(user);
+  const sortedPosts = state.posts
     .filter((post) => !findUser(post.userId)?.blocked)
     .slice()
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .sort((a, b) => {
+      const scoreDifference = recommendationScore(b, recommendationContext) - recommendationScore(a, recommendationContext);
+      if (scoreDifference !== 0) return scoreDifference;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   renderShell(`
     <section class="grid two">
@@ -851,7 +956,8 @@ function renderFeed() {
         <div class="toolbar">
           <div>
             <span class="eyebrow">Головна стрічка</span>
-            <h2>${followingPosts.length ? "Пости ваших підписок" : "Нові пости спільноти"}</h2>
+            <h2>Рекомендації для вас</h2>
+            <p class="muted">Пости ранжуються за підписками, інтересами, естетиками та схожими лайками.</p>
           </div>
           <a class="button" href="#/create-post">Створити пост</a>
         </div>
