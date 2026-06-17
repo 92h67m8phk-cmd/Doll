@@ -247,18 +247,49 @@ a {
   border-color: #ef9dc3;
   background: linear-gradient(135deg, #ffe8f2, #ffd9ea);
   color: #df4f93;
-  box-shadow:
-    0 0 0 1px rgba(239, 157, 195, 0.22),
-    0 12px 24px rgba(223, 79, 147, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(239, 157, 195, 0.22);
 }
 
 .like-button__icon {
-  font-size: 1.1rem;
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
   line-height: 1;
 }
 
-.like-button.liked .like-button__icon {
-  text-shadow: 0 0 12px rgba(223, 79, 147, 0.5);
+.like-heart {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+
+.like-heart--outline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.88;
+}
+
+.like-heart--fill {
+  fill: currentColor;
+  opacity: 0;
+  transform: scale(0.82);
+  transform-origin: center;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.like-button.liked .like-heart--outline {
+  opacity: 0.18;
+}
+
+.like-button.liked .like-heart--fill {
+  opacity: 1;
+  transform: scale(0.94);
 }
 
 .like-button__count {

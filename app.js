@@ -650,7 +650,14 @@ function renderLikeButton({ liked, count, onclick, label }) {
       aria-pressed="${liked ? "true" : "false"}"
       aria-label="${escapeHtml(label)}"
     >
-      <span class="like-button__icon" aria-hidden="true">${liked ? "♥" : "♡"}</span>
+      <span class="like-button__icon" aria-hidden="true">
+        <svg class="like-heart like-heart--outline" viewBox="0 0 24 24" focusable="false">
+          <path d="M12 20.4 4.9 13.8a4.77 4.77 0 0 1 0-6.91 4.95 4.95 0 0 1 7.03 0L12 7l.07-.11a4.95 4.95 0 0 1 7.03 0 4.77 4.77 0 0 1 0 6.91Z"></path>
+        </svg>
+        <svg class="like-heart like-heart--fill" viewBox="0 0 24 24" focusable="false">
+          <path d="M12 20.4 4.9 13.8a4.77 4.77 0 0 1 0-6.91 4.95 4.95 0 0 1 7.03 0L12 7l.07-.11a4.95 4.95 0 0 1 7.03 0 4.77 4.77 0 0 1 0 6.91Z"></path>
+        </svg>
+      </span>
       <span class="like-button__count">${count}</span>
     </button>
   `;
