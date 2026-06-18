@@ -302,6 +302,7 @@ const TOY_COLLECTIONS = [
 const TOY_TAG_DICTIONARY = [...TOY_BRANDS, ...TOY_CHARACTERS, ...TOY_COLLECTIONS];
 const POST_TAG_CATALOG = TOY_TAG_DICTIONARY.map((entry) => entry.canonical);
 const PROFILE_SHELF_SECTIONS = ["collection", "wishlist"];
+const PROFILE_SHELF_COLUMN_OPTIONS = [2, 3];
 const PROFILE_SHELF_THEMES = {
   rose: ["#f8dceb", "#d98bb6", "#6e3b5d"],
   moon: ["#e2e6ff", "#92a2f3", "#394585"],
@@ -316,6 +317,7 @@ const WISHLIST_CREATE_FIELD_LIMIT = 3;
 
 const DEFAULT_STATE = {
   currentUserId: null,
+  profileShelfColumns: 2,
   users: [
     {
       id: "u-me",
@@ -942,6 +944,10 @@ let didInitialRender = false;
 let remoteDiscussionsLoaded = false;
 let remoteDiscussionsError = "";
 let wishlistCreateDraft = emptyWishlistDraft();
+let collectionCreateDraft = emptyCollectionDraft();
+let collectionImagePinch = null;
+let collectionThumbDrag = null;
+let suppressCollectionThumbClick = false;
 
 function emptyWishlistDraft() {
   return {
@@ -951,6 +957,20 @@ function emptyWishlistDraft() {
     name: "",
     note: "",
     condition: "used",
+  };
+}
+
+function emptyCollectionDraft() {
+  return {
+    images: [],
+    activeImageIndex: 0,
+    zoom: 1,
+    brand: "",
+    collectionName: "",
+    name: "",
+    memory: "",
+    purchasePrice: "",
+    currency: "$",
   };
 }
 
@@ -1258,6 +1278,15 @@ function normalizeProfileSection(value = "") {
   return PROFILE_SHELF_SECTIONS.includes(value) ? value : "collection";
 }
 
+function normalizeProfileShelfColumns(value = 2) {
+  const numeric = Number(value);
+  return PROFILE_SHELF_COLUMN_OPTIONS.includes(numeric) ? numeric : 2;
+}
+
+function currentProfileShelfColumns() {
+  return normalizeProfileShelfColumns(state.profileShelfColumns);
+}
+
 function profileShelfHref(userId, section = "collection", params = {}) {
   const query = new URLSearchParams(
     Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""),
@@ -1278,6 +1307,10 @@ function wishlistCreateHref(userId) {
   return profileShelfHref(userId, "wishlist", { create: "wishlist" });
 }
 
+function collectionCreateHref(userId) {
+  return profileShelfHref(userId, "collection", { create: "collection" });
+}
+
 function openWishlistItem(userId, itemId) {
   if (!userId || !itemId) return;
   routeTo(wishlistItemHref(userId, itemId));
@@ -1289,10 +1322,24 @@ function openWishlistCreate(userId) {
   routeTo(wishlistCreateHref(userId));
 }
 
+function openCollectionCreate(userId) {
+  if (!userId) return;
+  collectionCreateDraft = emptyCollectionDraft();
+  collectionImagePinch = null;
+  routeTo(collectionCreateHref(userId));
+}
+
 function closeWishlistCreate(userId) {
   if (!userId) return;
   wishlistCreateDraft = emptyWishlistDraft();
   routeTo(profileShelfHref(userId, "wishlist"));
+}
+
+function closeCollectionCreate(userId) {
+  if (!userId) return;
+  collectionCreateDraft = emptyCollectionDraft();
+  collectionImagePinch = null;
+  routeTo(profileShelfHref(userId, "collection"));
 }
 
 function shelfMonogram(label = "") {
@@ -1435,12 +1482,41 @@ function buildWishlistDraftItem(user) {
   };
 }
 
+function buildCollectionDraftItem() {
+  return {
+    id: `shelf-${Date.now()}`,
+    name: collectionCreateDraft.name.trim(),
+    brand: collectionCreateDraft.brand.trim(),
+    collectionName: collectionCreateDraft.collectionName.trim(),
+    line: collectionCreateDraft.collectionName.trim() || "collection entry",
+    note: collectionCreateDraft.memory.trim(),
+    memory: collectionCreateDraft.memory.trim(),
+    purchasePrice: collectionCreateDraft.purchasePrice.trim(),
+    currency: collectionCreateDraft.currency || "$",
+    image: collectionCreateDraft.images[0] || "",
+    images: [...collectionCreateDraft.images],
+    accent: collectionCreateDraft.purchasePrice.trim()
+      ? `bought for ${collectionCreateDraft.currency || "$"}${collectionCreateDraft.purchasePrice.trim()}`
+      : "personal shelf",
+    palette: "moon",
+  };
+}
+
 function wishlistCreateReady() {
   return Boolean(
     wishlistCreateDraft.image &&
       wishlistCreateDraft.brand.trim() &&
       wishlistCreateDraft.collectionName.trim() &&
       wishlistCreateDraft.name.trim(),
+  );
+}
+
+function collectionCreateReady() {
+  return Boolean(
+    collectionCreateDraft.images.length &&
+      collectionCreateDraft.brand.trim() &&
+      collectionCreateDraft.collectionName.trim() &&
+      collectionCreateDraft.name.trim(),
   );
 }
 
@@ -1577,9 +1653,8 @@ function renderWishlistFocusModal(user, item) {
 
 function renderWishlistCreateModal(user) {
   return `
-    <div class="wishlist-focus-sheet is-open" role="dialog" aria-modal="true" aria-labelledby="wishlistCreateTitle">
-      <button class="wishlist-focus-backdrop wishlist-focus-backdrop-button" type="button" onclick="App.closeWishlistCreate('${user.id}')" aria-label="Закрити створення"></button>
-      <section class="wishlist-focus-card wishlist-create-card">
+    <div class="wishlist-focus-sheet wishlist-create-page is-open" role="dialog" aria-modal="true" aria-labelledby="wishlistCreateTitle">
+      <section class="wishlist-focus-card wishlist-create-card wishlist-create-card-full">
         <div class="wishlist-focus-head">
           <div>
             <span class="wishlist-focus-kicker">New Wish</span>
@@ -1622,7 +1697,7 @@ function renderWishlistCreateModal(user) {
             </label>
             <div class="wishlist-condition-row">
               <span class="wishlist-condition-label">Стан</span>
-              <button class="wishlist-condition-toggle ${wishlistCreateDraft.condition === "new" ? "is-new" : "is-used"}" type="button" onclick="App.toggleWishlistCondition()">
+              <button class="wishlist-condition-toggle ${wishlistCreateDraft.condition === "new" ? "is-new" : "is-used"}" type="button" onclick="App.toggleWishlistCondition(event)">
                 <span>${escapeHtml(wishlistConditionLabel(wishlistCreateDraft.condition))}</span>
               </button>
             </div>
@@ -1632,6 +1707,114 @@ function renderWishlistCreateModal(user) {
             </label>
           </div>
           <button class="button wishlist-create-submit ${wishlistCreateReady() ? "" : "is-disabled"}" type="submit" ${wishlistCreateReady() ? "" : "disabled"}>
+            Опублікувати
+          </button>
+        </form>
+      </section>
+    </div>
+  `;
+}
+
+function renderCollectionCreateModal(user) {
+  const activeImage = collectionCreateDraft.images[collectionCreateDraft.activeImageIndex] || collectionCreateDraft.images[0] || "";
+  return `
+    <div class="wishlist-focus-sheet wishlist-create-page is-open" role="dialog" aria-modal="true" aria-labelledby="collectionCreateTitle">
+      <section class="wishlist-focus-card wishlist-create-card wishlist-create-card-full">
+        <div class="wishlist-focus-head">
+          <div>
+            <span class="wishlist-focus-kicker">Collection Entry</span>
+            <h2 id="collectionCreateTitle">Нова картка Collection</h2>
+          </div>
+          <button class="ghost-button small" type="button" onclick="App.closeCollectionCreate('${user.id}')">Закрити</button>
+        </div>
+        <form class="wishlist-create-form" onsubmit="App.publishCollectionItem(event, '${user.id}')">
+          <div class="wishlist-create-preview">
+            <label
+              class="wishlist-create-image-slot collection-create-image-slot ${collectionCreateDraft.images.length ? "has-image" : ""}"
+              for="collectionCreateImage"
+              ontouchstart="App.handleCollectionImageTouchStart(event)"
+              ontouchmove="App.handleCollectionImageTouchMove(event)"
+              ontouchend="App.handleCollectionImageTouchEnd(event)"
+              ontouchcancel="App.handleCollectionImageTouchEnd(event)"
+            >
+              ${
+                activeImage
+                  ? `<img src="${activeImage}" alt="Нове фото collection" style="transform: scale(${collectionCreateDraft.zoom || 1})" />`
+                  : `
+                    <span class="wishlist-create-image-placeholder">
+                      <span class="wishlist-create-image-plus">${navIcon("plus")}</span>
+                      <strong>Додати фото</strong>
+                      <span>до 3 фото з галереї</span>
+                    </span>
+                  `
+              }
+            </label>
+            <input id="collectionCreateImage" class="hidden-file" type="file" accept="image/*" multiple onchange="App.pickCollectionImages(event)" />
+            ${
+              collectionCreateDraft.images.length
+                ? `
+                  <div class="collection-create-carousel">
+                    <div class="collection-create-thumbs">
+                      ${collectionCreateDraft.images
+                        .map(
+                          (image, index) => `
+                            <button
+                              class="collection-create-thumb ${index === collectionCreateDraft.activeImageIndex ? "is-active" : ""}"
+                              type="button"
+                              data-thumb-index="${index}"
+                              onclick="App.selectCollectionImage(${index})"
+                              onpointerdown="App.startCollectionThumbReorder(event, ${index})"
+                              onpointermove="App.moveCollectionThumbReorder(event, ${index})"
+                              onpointerup="App.endCollectionThumbReorder(event, ${index})"
+                              onpointercancel="App.cancelCollectionThumbReorder()"
+                              aria-label="Фото ${index + 1}"
+                            >
+                              <img src="${image}" alt="Фото ${index + 1}" />
+                            </button>
+                          `,
+                        )
+                        .join("")}
+                      ${
+                        collectionCreateDraft.images.length < 3
+                          ? `
+                            <label class="collection-create-thumb collection-create-thumb-add" for="collectionCreateImage" aria-label="Додати ще фото">
+                              ${navIcon("plus")}
+                            </label>
+                          `
+                          : ""
+                      }
+                    </div>
+                  </div>
+                `
+                : ""
+            }
+          </div>
+          <div class="wishlist-create-fields">
+            <label class="field">
+              Бренд
+              <input name="brand" value="${escapeHtml(collectionCreateDraft.brand)}" autocomplete="off" oninput="App.updateCollectionDraftField('brand', this.value)" />
+              <div data-collection-suggestions="brand" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <label class="field">
+              Колекція
+              <input name="collectionName" value="${escapeHtml(collectionCreateDraft.collectionName)}" autocomplete="off" oninput="App.updateCollectionDraftField('collectionName', this.value)" />
+              <div data-collection-suggestions="collectionName" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <label class="field">
+              Ім'я
+              <input name="name" value="${escapeHtml(collectionCreateDraft.name)}" autocomplete="off" oninput="App.updateCollectionDraftField('name', this.value)" />
+              <div data-collection-suggestions="name" class="tag-composer__suggestions hidden"></div>
+            </label>
+            <label class="field">
+              Ціна покупки
+              <input name="purchasePrice" inputmode="decimal" placeholder="120" value="${escapeHtml(collectionCreateDraft.purchasePrice)}" oninput="App.updateCollectionDraftField('purchasePrice', this.value.replace(/[^0-9.,]/g, ''))" />
+            </label>
+            <label class="field full">
+              Memory
+              <textarea name="memory" placeholder="Приємний спогад про цю ляльку, історія покупки, чому вона особлива..." oninput="App.updateCollectionDraftField('memory', this.value)">${escapeHtml(collectionCreateDraft.memory)}</textarea>
+            </label>
+          </div>
+          <button class="button wishlist-create-submit ${collectionCreateReady() ? "" : "is-disabled"}" type="submit" ${collectionCreateReady() ? "" : "disabled"}>
             Опублікувати
           </button>
         </form>
@@ -1994,6 +2177,19 @@ function navIcon(name, badgeCount = 0) {
         <circle cx="18.3" cy="12" r="1.35"></circle>
       </svg>
     `,
+    grid2: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4.5" y="5.2" width="6.3" height="13.6" rx="1.8"></rect>
+        <rect x="13.2" y="5.2" width="6.3" height="13.6" rx="1.8"></rect>
+      </svg>
+    `,
+    grid3: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4.2" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
+        <rect x="9.85" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
+        <rect x="15.5" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
+      </svg>
+    `,
   };
   return `
     <span class="tab-icon-wrap">
@@ -2331,7 +2527,6 @@ function renderShelfCard(item, section = "collection", userId = "") {
       <div class="profile-shelf-card-body">
         <p class="profile-shelf-card-line">${escapeHtml(item.line || (isWishlist ? "wishlist note" : "collection note"))}</p>
         <h3>${escapeHtml(item.name || "Untitled doll")}</h3>
-        <p>${escapeHtml(item.note || (isWishlist ? "Waiting for the right moment." : "Part of the active shelf."))}</p>
       </div>
     </article>
   `;
@@ -2355,6 +2550,7 @@ function renderShelfPanel({ user, section, activeSection, items }) {
   const wishlistTotal = user.wishlistDolls?.length || 0;
   const foundCount = (user.wishlistDolls || []).filter((item) => item.purchased).length;
   const waitingCount = Math.max(wishlistTotal - foundCount, 0);
+  const shelfColumns = currentProfileShelfColumns();
   const headline = isWishlist ? "Wish List" : "Collection";
   const description = isWishlist
     ? "Те, що ще шукається, і те, що вже вдалося знайти."
@@ -2373,10 +2569,27 @@ function renderShelfPanel({ user, section, activeSection, items }) {
         ${
           isWishlist
             ? `<button class="profile-shelf-add-button" type="button" onclick="App.openWishlistCreate('${user.id}')" aria-label="Додати в wish list">${navIcon("plus")}</button>`
-            : `<button class="profile-shelf-add-button is-disabled" type="button" aria-label="Додати в collection" disabled>${navIcon("plus")}</button>`
+            : `<button class="profile-shelf-add-button" type="button" onclick="App.openCollectionCreate('${user.id}')" aria-label="Додати в collection">${navIcon("plus")}</button>`
         }
       </div>
-      ${isWishlist ? `<div class="profile-shelf-panel-actions"><span class="profile-shelf-panel-count">${escapeHtml(summary)}</span></div>` : ""}
+      <div class="profile-shelf-panel-actions">
+        ${isWishlist ? `<span class="profile-shelf-panel-count">${escapeHtml(summary)}</span>` : ""}
+        <div class="profile-shelf-layout-switch" aria-label="Щільність сітки">
+          ${PROFILE_SHELF_COLUMN_OPTIONS.map(
+            (columns) => `
+              <button
+                class="profile-shelf-layout-option ${shelfColumns === columns ? "is-active" : ""}"
+                type="button"
+                onclick="App.setProfileShelfColumns(${columns})"
+                aria-pressed="${shelfColumns === columns ? "true" : "false"}"
+                aria-label="${columns} карточки в ряд"
+              >
+                ${navIcon(columns === 2 ? "grid2" : "grid3")}
+              </button>
+            `,
+          ).join("")}
+        </div>
+      </div>
       ${
         isWishlist
           ? `
@@ -2391,11 +2604,17 @@ function renderShelfPanel({ user, section, activeSection, items }) {
       }
       ${
         items.length
-          ? `<div class="profile-shelf-grid">${items.map((item) => renderShelfCard(item, section, user.id)).join("")}</div>`
+          ? `<div class="profile-shelf-grid" style="--mobile-shelf-columns:${shelfColumns}">${items.map((item) => renderShelfCard(item, section, user.id)).join("")}</div>`
           : emptyState(isWishlist ? "Wish List ще порожній." : "Колекція ще не заповнена.")
       }
     </section>
   `;
+}
+
+function setProfileShelfColumns(columns) {
+  state.profileShelfColumns = normalizeProfileShelfColumns(columns);
+  saveState();
+  render();
 }
 
 function toggleWishlistStatus(userId, itemId) {
@@ -2418,6 +2637,39 @@ function updateWishlistDraftField(field, value) {
   }
 }
 
+function renderCollectionCreateSuggestions(field) {
+  const container = document.querySelector(`[data-collection-suggestions="${field}"]`);
+  if (!container) return;
+  if (!collectionCreateDraft[field].trim()) {
+    container.innerHTML = "";
+    container.classList.add("hidden");
+    return;
+  }
+  const matched = toySuggestionsByType(field === "name" ? "character" : field, collectionCreateDraft[field]);
+  container.innerHTML = matched
+    .map(
+      (item) => `
+        <button class="tag-composer__suggestion" type="button" onclick="App.applyCollectionSuggestion('${field}', '${encodeURIComponent(item.value)}')">
+          ${escapeHtml(item.label)}
+        </button>
+      `,
+    )
+    .join("");
+  container.classList.toggle("hidden", !matched.length);
+}
+
+function updateCollectionDraftField(field, value) {
+  collectionCreateDraft[field] = String(value || "");
+  if (field === "brand" || field === "collectionName" || field === "name") {
+    renderCollectionCreateSuggestions(field);
+  }
+  const submit = document.querySelector(".wishlist-create-submit");
+  if (submit) {
+    submit.disabled = !collectionCreateReady();
+    submit.classList.toggle("is-disabled", !collectionCreateReady());
+  }
+}
+
 function applyWishlistSuggestion(field, value) {
   const decoded = decodeURIComponent(String(value || ""));
   wishlistCreateDraft[field] = decoded;
@@ -2435,9 +2687,33 @@ function applyWishlistSuggestion(field, value) {
   }
 }
 
-function toggleWishlistCondition() {
+function applyCollectionSuggestion(field, value) {
+  const decoded = decodeURIComponent(String(value || ""));
+  collectionCreateDraft[field] = decoded;
+  const input = document.querySelector(`.wishlist-create-form [name="${field}"]`);
+  if (input) input.value = decoded;
+  const container = document.querySelector(`[data-collection-suggestions="${field}"]`);
+  if (container) {
+    container.innerHTML = "";
+    container.classList.add("hidden");
+  }
+  const submit = document.querySelector(".wishlist-create-submit");
+  if (submit) {
+    submit.disabled = !collectionCreateReady();
+    submit.classList.toggle("is-disabled", !collectionCreateReady());
+  }
+}
+
+function toggleWishlistCondition(event) {
+  event?.preventDefault?.();
   wishlistCreateDraft.condition = wishlistCreateDraft.condition === "used" ? "new" : "used";
-  render();
+  const toggle = document.querySelector(".wishlist-condition-toggle");
+  if (toggle) {
+    toggle.classList.toggle("is-new", wishlistCreateDraft.condition === "new");
+    toggle.classList.toggle("is-used", wishlistCreateDraft.condition !== "new");
+    const label = toggle.querySelector("span");
+    if (label) label.textContent = wishlistConditionLabel(wishlistCreateDraft.condition);
+  }
 }
 
 async function pickWishlistImage(event) {
@@ -2445,6 +2721,132 @@ async function pickWishlistImage(event) {
   if (!file) return;
   wishlistCreateDraft.image = await fileToDataUrl(file);
   render();
+}
+
+async function pickCollectionImages(event) {
+  const files = Array.from(event.currentTarget.files || []).slice(0, 3);
+  if (!files.length) return;
+  const nextImages = await Promise.all(files.map((file) => fileToDataUrl(file)));
+  collectionCreateDraft.images = [...collectionCreateDraft.images, ...nextImages].slice(0, 3);
+  collectionCreateDraft.activeImageIndex = Math.min(
+    collectionCreateDraft.activeImageIndex,
+    Math.max(collectionCreateDraft.images.length - 1, 0),
+  );
+  collectionCreateDraft.zoom = 1;
+  render();
+}
+
+function selectCollectionImage(index) {
+  if (suppressCollectionThumbClick) {
+    suppressCollectionThumbClick = false;
+    return;
+  }
+  if (index < 0 || index >= collectionCreateDraft.images.length) return;
+  collectionCreateDraft.activeImageIndex = index;
+  collectionCreateDraft.zoom = 1;
+  render();
+}
+
+function collectionTouchDistance(touches) {
+  if (!touches || touches.length < 2) return 0;
+  const [a, b] = touches;
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
+function handleCollectionImageTouchStart(event) {
+  if (event.touches?.length === 2) {
+    collectionImagePinch = {
+      startDistance: collectionTouchDistance(event.touches),
+      startZoom: collectionCreateDraft.zoom || 1,
+    };
+  }
+}
+
+function handleCollectionImageTouchMove(event) {
+  if (event.touches?.length !== 2 || !collectionImagePinch) return;
+  event.preventDefault();
+  const distance = collectionTouchDistance(event.touches);
+  if (!distance || !collectionImagePinch.startDistance) return;
+  const nextZoom = Math.min(3, Math.max(1, (collectionImagePinch.startZoom * distance) / collectionImagePinch.startDistance));
+  collectionCreateDraft.zoom = Number(nextZoom.toFixed(2));
+  const image = document.querySelector(".collection-create-image-slot img");
+  if (image) image.style.transform = `scale(${collectionCreateDraft.zoom})`;
+}
+
+function handleCollectionImageTouchEnd() {
+  if (collectionImagePinch && (collectionCreateDraft.zoom || 1) < 1.02) {
+    collectionCreateDraft.zoom = 1;
+    const image = document.querySelector(".collection-create-image-slot img");
+    if (image) image.style.transform = "scale(1)";
+  }
+  collectionImagePinch = null;
+}
+
+function startCollectionThumbReorder(event, index) {
+  const target = event.currentTarget;
+  if (!target) return;
+  const container = target.parentElement;
+  if (!container) return;
+  collectionThumbDrag = {
+    pointerId: event.pointerId,
+    index,
+    moved: false,
+    target,
+    container,
+    startX: event.clientX,
+    startY: event.clientY,
+    offsetX: 0,
+    offsetY: 0,
+  };
+  target.classList.add("is-dragging");
+  target.setPointerCapture?.(event.pointerId);
+}
+
+function moveCollectionThumbReorder(event) {
+  if (!collectionThumbDrag || collectionThumbDrag.pointerId !== event.pointerId) return;
+  const drag = collectionThumbDrag;
+  drag.offsetX = event.clientX - drag.startX;
+  drag.offsetY = event.clientY - drag.startY;
+  if (Math.abs(drag.offsetX) > 3 || Math.abs(drag.offsetY) > 3) drag.moved = true;
+  drag.target.style.transform = `translate(${drag.offsetX}px, ${drag.offsetY}px) scale(1.06)`;
+  const hovered = document.elementFromPoint(event.clientX, event.clientY)?.closest?.(".collection-create-thumb:not(.is-dragging)");
+  if (!hovered || hovered === drag.target || !drag.container.contains(hovered)) return;
+  const allThumbs = [...drag.container.querySelectorAll(".collection-create-thumb:not(.collection-create-thumb-add)")];
+  const draggedIndex = allThumbs.indexOf(drag.target);
+  const hoveredIndex = allThumbs.indexOf(hovered);
+  if (draggedIndex < 0 || hoveredIndex < 0 || draggedIndex === hoveredIndex) return;
+  if (draggedIndex < hoveredIndex) {
+    drag.container.insertBefore(drag.target, hovered.nextSibling);
+  } else {
+    drag.container.insertBefore(drag.target, hovered);
+  }
+}
+
+function endCollectionThumbReorder(event) {
+  if (!collectionThumbDrag || collectionThumbDrag.pointerId !== event.pointerId) return;
+  const drag = collectionThumbDrag;
+  drag.target.releasePointerCapture?.(event.pointerId);
+  drag.target.classList.remove("is-dragging");
+  drag.target.style.transform = "";
+  if (drag.moved) {
+    suppressCollectionThumbClick = true;
+    const orderedSources = [...drag.container.querySelectorAll(".collection-create-thumb img")].map((image) => image.getAttribute("src") || "");
+    collectionCreateDraft.images = orderedSources.filter(Boolean);
+    const activeSrc = drag.target.querySelector("img")?.getAttribute("src") || "";
+    collectionCreateDraft.activeImageIndex = Math.max(0, collectionCreateDraft.images.indexOf(activeSrc));
+    render();
+    setTimeout(() => {
+      suppressCollectionThumbClick = false;
+    }, 120);
+  }
+  collectionThumbDrag = null;
+}
+
+function cancelCollectionThumbReorder() {
+  if (!collectionThumbDrag) return;
+  collectionThumbDrag.target.classList.remove("is-dragging");
+  collectionThumbDrag.target.style.transform = "";
+  collectionThumbDrag = null;
 }
 
 function publishWishlistItem(event, userId) {
@@ -2456,6 +2858,17 @@ function publishWishlistItem(event, userId) {
   saveState();
   wishlistCreateDraft = emptyWishlistDraft();
   routeTo(wishlistItemHref(userId, nextItem.id));
+}
+
+function publishCollectionItem(event, userId) {
+  event.preventDefault();
+  const user = findUser(userId);
+  if (!user || !collectionCreateReady()) return;
+  const nextItem = buildCollectionDraftItem();
+  user.collectionDolls = [nextItem, ...(user.collectionDolls || [])];
+  saveState();
+  collectionCreateDraft = emptyCollectionDraft();
+  routeTo(profileShelfHref(userId, "collection"));
 }
 
 function renderProfile(id, section = "collection", activeWishId = "", createMode = "") {
@@ -2481,8 +2894,9 @@ function renderProfile(id, section = "collection", activeWishId = "", createMode
   const shelfStatus = `${collectionDolls.length} на полці • ${wishlistDolls.length - foundWishlist} ще шукаються`;
   const activeWishItem =
     activeSection === "wishlist" ? wishlistDolls.find((item) => item.id === activeWishId) || null : null;
+  const creatingCollection = activeSection === "collection" && createMode === "collection";
   const creatingWishlist = activeSection === "wishlist" && createMode === "wishlist";
-  document.body.classList.toggle("has-modal", Boolean(activeWishItem || creatingWishlist));
+  document.body.classList.toggle("has-modal", Boolean(activeWishItem || creatingWishlist || creatingCollection));
 
   renderShell(`
     <section class="profile-page">
@@ -2577,8 +2991,14 @@ function renderProfile(id, section = "collection", activeWishId = "", createMode
       </div>
     </section>
     ${renderWishlistFocusModal(user, activeWishItem)}
+    ${creatingCollection ? renderCollectionCreateModal(user) : ""}
     ${creatingWishlist ? renderWishlistCreateModal(user) : ""}
   `);
+  if (creatingCollection) {
+    renderCollectionCreateSuggestions("brand");
+    renderCollectionCreateSuggestions("collectionName");
+    renderCollectionCreateSuggestions("name");
+  }
   if (creatingWishlist) {
     renderWishlistCreateSuggestions("brand");
     renderWishlistCreateSuggestions("collectionName");
@@ -4500,13 +4920,28 @@ window.App = {
   openCreateGallery,
   openCreateDetails,
   openWishlistItem,
+  openCollectionCreate,
   openWishlistCreate,
+  closeCollectionCreate,
   closeWishlistCreate,
+  setProfileShelfColumns,
   previewCreateMedia,
   pickWishlistImage,
+  pickCollectionImages,
+  selectCollectionImage,
+  handleCollectionImageTouchStart,
+  handleCollectionImageTouchMove,
+  handleCollectionImageTouchEnd,
+  startCollectionThumbReorder,
+  moveCollectionThumbReorder,
+  endCollectionThumbReorder,
+  cancelCollectionThumbReorder,
   updateWishlistDraftField,
+  updateCollectionDraftField,
   applyWishlistSuggestion,
+  applyCollectionSuggestion,
   toggleWishlistCondition,
+  publishCollectionItem,
   publishWishlistItem,
   drawerEventY,
   removeDiscussionTag,

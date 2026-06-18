@@ -1544,6 +1544,46 @@ select:focus {
   margin-bottom: 0.9rem;
 }
 
+.profile-shelf-layout-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  padding: 0.18rem;
+  border: 1px solid rgba(198, 185, 207, 0.42);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.profile-shelf-layout-option {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #8c7f8d;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-shelf-layout-option .tab-icon-wrap {
+  display: inline-grid;
+  place-items: center;
+}
+
+.profile-shelf-layout-option .tab-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.profile-shelf-layout-option.is-active {
+  background: linear-gradient(135deg, rgba(236, 163, 211, 0.95), rgba(140, 167, 244, 0.95));
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(130, 135, 214, 0.18);
+}
+
 .profile-shelf-add-button {
   position: absolute;
   top: 0.1rem;
@@ -1681,12 +1721,14 @@ select:focus {
 .profile-shelf-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
   gap: 0.9rem;
 }
 
 .profile-shelf-card-link {
   display: block;
   width: 100%;
+  height: 100%;
   padding: 0;
   border: 0;
   background: transparent;
@@ -1696,6 +1738,9 @@ select:focus {
 }
 
 .profile-shelf-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-width: 0;
   border: 1px solid rgba(200, 191, 213, 0.34);
   border-radius: 24px;
@@ -1769,8 +1814,13 @@ select:focus {
 
 .profile-shelf-card-body {
   display: grid;
-  gap: 0.22rem;
+  grid-template-rows: auto minmax(2.3rem, auto);
+  align-content: start;
+  gap: 0.28rem;
+  flex: 1 1 auto;
+  min-height: 4.9rem;
   padding: 0.82rem 0.82rem 0.92rem;
+  overflow: hidden;
 }
 
 .profile-shelf-card-line {
@@ -1780,19 +1830,15 @@ select:focus {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-shelf-card-body h3 {
   margin: 0;
   font-size: 0.98rem;
   line-height: 1.18;
-}
-
-.profile-shelf-card-body p {
-  margin: 0;
-  color: #81757f;
-  font-size: 0.84rem;
-  line-height: 1.34;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -1868,6 +1914,43 @@ select:focus {
   max-height: min(78vh, 720px);
 }
 
+.wishlist-create-page {
+  display: block;
+  padding: 0;
+  background:
+    radial-gradient(circle at top left, rgba(244, 220, 239, 0.72), transparent 24%),
+    radial-gradient(circle at top right, rgba(217, 226, 255, 0.78), transparent 26%),
+    linear-gradient(180deg, rgba(252, 249, 255, 0.98), rgba(247, 243, 251, 0.98));
+  overflow: auto;
+  touch-action: auto;
+}
+
+.wishlist-create-card-full {
+  width: min(920px, 100%);
+  max-width: 100%;
+  min-height: auto;
+  max-height: none;
+  margin: 0 auto;
+  padding: 1.1rem 1rem calc(8.5rem + env(safe-area-inset-bottom, 0px));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+}
+
+.wishlist-create-card-full .wishlist-focus-head {
+  position: static;
+  padding: 0 0 0.9rem;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.wishlist-create-card-full .wishlist-create-form {
+  gap: 1.15rem;
+}
+
 .wishlist-create-form {
   display: grid;
   gap: 0.95rem;
@@ -1891,6 +1974,10 @@ select:focus {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.wishlist-create-image-slot.has-image {
+  aspect-ratio: 0.84;
 }
 
 .wishlist-create-image-placeholder {
@@ -1924,6 +2011,71 @@ select:focus {
   gap: 0.75rem;
 }
 
+.collection-create-carousel {
+  margin-top: 0.55rem;
+}
+
+.collection-create-thumbs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.collection-create-thumb {
+  display: grid;
+  overflow: hidden;
+  width: 2.6rem;
+  aspect-ratio: 0.74;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid rgba(205, 197, 222, 0.82);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.54);
+  cursor: pointer;
+  touch-action: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.collection-create-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-create-thumb.is-active {
+  border-color: rgba(140, 167, 244, 0.9);
+  box-shadow: 0 6px 14px rgba(130, 135, 214, 0.16);
+}
+
+.collection-create-thumb.is-dragging {
+  z-index: 3;
+  box-shadow: 0 14px 24px rgba(85, 72, 113, 0.22);
+  transition: none;
+}
+
+.collection-create-thumb-add {
+  place-items: center;
+  color: #d18eea;
+  backdrop-filter: blur(12px);
+}
+
+.collection-create-thumb-add .tab-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.collection-create-image-slot {
+  touch-action: none;
+}
+
+.collection-create-image-slot img {
+  transform-origin: center center;
+  transition: transform 120ms ease;
+}
+
 .wishlist-create-fields .field {
   min-width: 0;
 }
@@ -1931,6 +2083,7 @@ select:focus {
 .wishlist-create-submit {
   width: 100%;
   background: #4d8dff;
+  margin-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
 }
 
 .wishlist-create-submit.is-disabled,
@@ -3150,7 +3303,7 @@ select:focus {
   }
 
   .profile-shelf-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--mobile-shelf-columns, 2), minmax(0, 1fr));
     gap: 0.75rem;
   }
 
@@ -3173,6 +3326,12 @@ select:focus {
 
   .wishlist-create-card {
     width: min(100%, 24rem);
+  }
+
+  .wishlist-create-card-full {
+    width: 100%;
+    min-height: auto;
+    padding: 0.9rem 0.85rem calc(9rem + env(safe-area-inset-bottom, 0px));
   }
 
   .wishlist-focus-layout {
