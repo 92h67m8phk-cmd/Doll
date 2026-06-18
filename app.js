@@ -314,10 +314,48 @@ const PROFILE_SHELF_THEMES = {
   porcelain: ["#f8edf8", "#cab1df", "#6f5b85"],
 };
 const WISHLIST_CREATE_FIELD_LIMIT = 3;
+const PROFILE_SHELF_SORT_OPTIONS = [
+  { value: "recent", label: "Сначала новые" },
+  { value: "brand", label: "По бренду" },
+  { value: "collection", label: "По серии" },
+  { value: "purchaseDate", label: "По дате покупки" },
+];
+const PROFILE_SHELF_FILTER_OPTIONS = [
+  { value: "all", label: "Вся коллекция" },
+  { value: "collection", label: "В коллекции" },
+  { value: "sale", label: "На продаже" },
+  { value: "sold", label: "Продана" },
+  { value: "trade", label: "В обмен" },
+];
+const COLLECTION_STATUS_OPTIONS = [
+  { value: "collection", label: "В коллекции" },
+  { value: "sale", label: "На продаже" },
+  { value: "sold", label: "Продана" },
+  { value: "trade", label: "В обмен" },
+];
+const COLLECTION_CONDITION_OPTIONS = [
+  { value: "nrfb", label: "NRFB" },
+  { value: "opened", label: "Открыта" },
+  { value: "used", label: "Б/у" },
+  { value: "incomplete", label: "Некомплект" },
+  { value: "damaged", label: "С дефектом" },
+];
+const COLLECTION_COMPLETENESS_OPTIONS = [
+  { value: "full", label: "Полный комплект" },
+  { value: "no-box", label: "Без коробки" },
+  { value: "no-accessories", label: "Без аксессуаров" },
+];
+const COLLECTION_CUSTOMIZATION_OPTIONS = [
+  { value: "original", label: "Оригинал" },
+  { value: "partial-custom", label: "Частичный кастом" },
+  { value: "full-custom", label: "Полный кастом" },
+];
 
 const DEFAULT_STATE = {
   currentUserId: null,
   profileShelfColumns: 2,
+  profileShelfSort: "recent",
+  profileShelfFilter: "all",
   users: [
     {
       id: "u-me",
@@ -945,6 +983,10 @@ let remoteDiscussionsLoaded = false;
 let remoteDiscussionsError = "";
 let wishlistCreateDraft = emptyWishlistDraft();
 let collectionCreateDraft = emptyCollectionDraft();
+let collectionCreateStep = 1;
+let collectionChoiceOpenField = "";
+let collectionStorageOpen = false;
+let profileShelfActionOpen = "";
 let collectionImagePinch = null;
 let collectionThumbDrag = null;
 let suppressCollectionThumbClick = false;
@@ -971,6 +1013,15 @@ function emptyCollectionDraft() {
     memory: "",
     purchasePrice: "",
     currency: "$",
+    status: "collection",
+    condition: "opened",
+    completeness: "full",
+    customization: "original",
+    purchaseDate: "",
+    storageRoom: "",
+    storageCabinet: "",
+    storageShelf: "",
+    storageBox: "",
   };
 }
 
@@ -1283,8 +1334,24 @@ function normalizeProfileShelfColumns(value = 2) {
   return PROFILE_SHELF_COLUMN_OPTIONS.includes(numeric) ? numeric : 2;
 }
 
+function normalizeProfileShelfSort(value = "recent") {
+  return PROFILE_SHELF_SORT_OPTIONS.some((option) => option.value === value) ? value : "recent";
+}
+
+function normalizeProfileShelfFilter(value = "all") {
+  return PROFILE_SHELF_FILTER_OPTIONS.some((option) => option.value === value) ? value : "all";
+}
+
 function currentProfileShelfColumns() {
   return normalizeProfileShelfColumns(state.profileShelfColumns);
+}
+
+function currentProfileShelfSort() {
+  return normalizeProfileShelfSort(state.profileShelfSort);
+}
+
+function currentProfileShelfFilter() {
+  return normalizeProfileShelfFilter(state.profileShelfFilter);
 }
 
 function profileShelfHref(userId, section = "collection", params = {}) {
@@ -1325,6 +1392,9 @@ function openWishlistCreate(userId) {
 function openCollectionCreate(userId) {
   if (!userId) return;
   collectionCreateDraft = emptyCollectionDraft();
+  collectionCreateStep = 1;
+  collectionChoiceOpenField = "";
+  collectionStorageOpen = false;
   collectionImagePinch = null;
   routeTo(collectionCreateHref(userId));
 }
@@ -1338,8 +1408,91 @@ function closeWishlistCreate(userId) {
 function closeCollectionCreate(userId) {
   if (!userId) return;
   collectionCreateDraft = emptyCollectionDraft();
+  collectionCreateStep = 1;
+  collectionChoiceOpenField = "";
+  collectionStorageOpen = false;
   collectionImagePinch = null;
   routeTo(profileShelfHref(userId, "collection"));
+}
+
+function optionLabel(options, value, fallback = "") {
+  return options.find((option) => option.value === value)?.label || fallback || "Не обрано";
+}
+
+function collectionStatusValue(item = {}) {
+  return item.status || "collection";
+}
+
+function collectionConditionValue(item = {}) {
+  return item.condition || "opened";
+}
+
+function collectionCompletenessValue(item = {}) {
+  return item.completeness || "full";
+}
+
+function collectionCustomizationValue(item = {}) {
+  return item.customization || "original";
+}
+
+function collectionStorageSummary(item = {}) {
+  return [item.storageRoom, item.storageCabinet, item.storageShelf, item.storageBox].filter(Boolean).join(" · ");
+}
+
+function collectionMetaChips(item = {}) {
+  const chips = [
+    optionLabel(COLLECTION_STATUS_OPTIONS, collectionStatusValue(item), "В коллекции"),
+    optionLabel(COLLECTION_CONDITION_OPTIONS, collectionConditionValue(item), "Открыта"),
+    optionLabel(COLLECTION_COMPLETENESS_OPTIONS, collectionCompletenessValue(item), "Полный комплект"),
+  ];
+  if (item.customization && item.customization !== "original") {
+    chips.push(optionLabel(COLLECTION_CUSTOMIZATION_OPTIONS, collectionCustomizationValue(item)));
+  }
+  return chips.filter(Boolean).slice(0, 3);
+}
+
+function collectionStorageLabel() {
+  return collectionStorageSummary(collectionCreateDraft) || "Выбрать место хранения";
+}
+
+function collectionMatchesFilter(item = {}, filter = "all") {
+  const status = collectionStatusValue(item);
+  if (filter === "all") return true;
+  return status === filter;
+}
+
+function compareNullableDates(left = "", right = "") {
+  const leftTime = left ? new Date(left).getTime() : 0;
+  const rightTime = right ? new Date(right).getTime() : 0;
+  return rightTime - leftTime;
+}
+
+function sortCollectionItems(items = [], sort = "recent") {
+  return [...items].sort((a, b) => {
+    if (sort === "brand") {
+      return (a.brand || "").localeCompare(b.brand || "") || (a.collectionName || "").localeCompare(b.collectionName || "") || (a.name || "").localeCompare(b.name || "");
+    }
+    if (sort === "collection") {
+      return (a.collectionName || "").localeCompare(b.collectionName || "") || (a.name || "").localeCompare(b.name || "");
+    }
+    if (sort === "purchaseDate") {
+      const dateDiff = compareNullableDates(a.purchaseDate, b.purchaseDate);
+      if (dateDiff !== 0) return dateDiff;
+    }
+    const createdDiff = compareNullableDates(a.createdAt, b.createdAt);
+    if (createdDiff !== 0) return createdDiff;
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
+function currentProfileShelfAction() {
+  return profileShelfActionOpen;
+}
+
+function toggleProfileShelfAction(action = "") {
+  const normalized = action === "sort" || action === "filter" ? action : "";
+  profileShelfActionOpen = profileShelfActionOpen === normalized ? "" : normalized;
+  render();
 }
 
 function shelfMonogram(label = "") {
@@ -1485,6 +1638,7 @@ function buildWishlistDraftItem(user) {
 function buildCollectionDraftItem() {
   return {
     id: `shelf-${Date.now()}`,
+    createdAt: new Date().toISOString(),
     name: collectionCreateDraft.name.trim(),
     brand: collectionCreateDraft.brand.trim(),
     collectionName: collectionCreateDraft.collectionName.trim(),
@@ -1493,6 +1647,15 @@ function buildCollectionDraftItem() {
     memory: collectionCreateDraft.memory.trim(),
     purchasePrice: collectionCreateDraft.purchasePrice.trim(),
     currency: collectionCreateDraft.currency || "$",
+    status: collectionCreateDraft.status,
+    condition: collectionCreateDraft.condition,
+    completeness: collectionCreateDraft.completeness,
+    customization: collectionCreateDraft.customization,
+    purchaseDate: collectionCreateDraft.purchaseDate,
+    storageRoom: collectionCreateDraft.storageRoom.trim(),
+    storageCabinet: collectionCreateDraft.storageCabinet.trim(),
+    storageShelf: collectionCreateDraft.storageShelf.trim(),
+    storageBox: collectionCreateDraft.storageBox.trim(),
     image: collectionCreateDraft.images[0] || "",
     images: [...collectionCreateDraft.images],
     accent: collectionCreateDraft.purchasePrice.trim()
@@ -1717,6 +1880,7 @@ function renderWishlistCreateModal(user) {
 
 function renderCollectionCreateModal(user) {
   const activeImage = collectionCreateDraft.images[collectionCreateDraft.activeImageIndex] || collectionCreateDraft.images[0] || "";
+  const isFirstStep = collectionCreateStep === 1;
   return `
     <div class="wishlist-focus-sheet wishlist-create-page is-open" role="dialog" aria-modal="true" aria-labelledby="collectionCreateTitle">
       <section class="wishlist-focus-card wishlist-create-card wishlist-create-card-full">
@@ -1724,99 +1888,181 @@ function renderCollectionCreateModal(user) {
           <div>
             <span class="wishlist-focus-kicker">Collection Entry</span>
             <h2 id="collectionCreateTitle">Нова картка Collection</h2>
+            <p class="collection-create-step-copy">${isFirstStep ? "Шаг 1 из 2: фото, имя и базовая информация." : "Шаг 2 из 2: статус, состояние и хранение."}</p>
           </div>
           <button class="ghost-button small" type="button" onclick="App.closeCollectionCreate('${user.id}')">Закрити</button>
         </div>
         <form class="wishlist-create-form" onsubmit="App.publishCollectionItem(event, '${user.id}')">
-          <div class="wishlist-create-preview">
-            <label
-              class="wishlist-create-image-slot collection-create-image-slot ${collectionCreateDraft.images.length ? "has-image" : ""}"
-              for="collectionCreateImage"
-              ontouchstart="App.handleCollectionImageTouchStart(event)"
-              ontouchmove="App.handleCollectionImageTouchMove(event)"
-              ontouchend="App.handleCollectionImageTouchEnd(event)"
-              ontouchcancel="App.handleCollectionImageTouchEnd(event)"
-            >
-              ${
-                activeImage
-                  ? `<img src="${activeImage}" alt="Нове фото collection" style="transform: scale(${collectionCreateDraft.zoom || 1})" />`
-                  : `
-                    <span class="wishlist-create-image-placeholder">
-                      <span class="wishlist-create-image-plus">${navIcon("plus")}</span>
-                      <strong>Додати фото</strong>
-                      <span>до 3 фото з галереї</span>
-                    </span>
-                  `
-              }
-            </label>
-            <input id="collectionCreateImage" class="hidden-file" type="file" accept="image/*" multiple onchange="App.pickCollectionImages(event)" />
-            ${
-              collectionCreateDraft.images.length
-                ? `
-                  <div class="collection-create-carousel">
-                    <div class="collection-create-thumbs">
-                      ${collectionCreateDraft.images
-                        .map(
-                          (image, index) => `
-                            <button
-                              class="collection-create-thumb ${index === collectionCreateDraft.activeImageIndex ? "is-active" : ""}"
-                              type="button"
-                              data-thumb-index="${index}"
-                              onclick="App.selectCollectionImage(${index})"
-                              onpointerdown="App.startCollectionThumbReorder(event, ${index})"
-                              onpointermove="App.moveCollectionThumbReorder(event, ${index})"
-                              onpointerup="App.endCollectionThumbReorder(event, ${index})"
-                              onpointercancel="App.cancelCollectionThumbReorder()"
-                              aria-label="Фото ${index + 1}"
-                            >
-                              <img src="${image}" alt="Фото ${index + 1}" />
-                            </button>
-                          `,
-                        )
-                        .join("")}
-                      ${
-                        collectionCreateDraft.images.length < 3
-                          ? `
-                            <label class="collection-create-thumb collection-create-thumb-add" for="collectionCreateImage" aria-label="Додати ще фото">
-                              ${navIcon("plus")}
-                            </label>
-                          `
-                          : ""
-                      }
+          <div class="collection-create-steps">
+            <span class="collection-create-step ${isFirstStep ? "is-active" : "is-done"}">1</span>
+            <span class="collection-create-step-line"></span>
+            <span class="collection-create-step ${!isFirstStep ? "is-active" : ""}">2</span>
+          </div>
+          ${
+            isFirstStep
+              ? `
+                <div class="wishlist-create-preview">
+                  <label
+                    class="wishlist-create-image-slot collection-create-image-slot ${collectionCreateDraft.images.length ? "has-image" : ""}"
+                    for="collectionCreateImage"
+                    ontouchstart="App.handleCollectionImageTouchStart(event)"
+                    ontouchmove="App.handleCollectionImageTouchMove(event)"
+                    ontouchend="App.handleCollectionImageTouchEnd(event)"
+                    ontouchcancel="App.handleCollectionImageTouchEnd(event)"
+                  >
+                    ${
+                      activeImage
+                        ? `<img src="${activeImage}" alt="Нове фото collection" style="transform: scale(${collectionCreateDraft.zoom || 1})" />`
+                        : `
+                          <span class="wishlist-create-image-placeholder">
+                            <span class="wishlist-create-image-plus">${navIcon("plus")}</span>
+                            <strong>Додати фото</strong>
+                            <span>до 3 фото з галереї</span>
+                          </span>
+                        `
+                    }
+                  </label>
+                  <input id="collectionCreateImage" class="hidden-file" type="file" accept="image/*" multiple onchange="App.pickCollectionImages(event)" />
+                  ${
+                    collectionCreateDraft.images.length
+                      ? `
+                        <div class="collection-create-carousel">
+                          <div class="collection-create-thumbs">
+                            ${collectionCreateDraft.images
+                              .map(
+                                (image, index) => `
+                                  <button
+                                    class="collection-create-thumb ${index === collectionCreateDraft.activeImageIndex ? "is-active" : ""}"
+                                    type="button"
+                                    data-thumb-index="${index}"
+                                    onclick="App.selectCollectionImage(${index})"
+                                    onpointerdown="App.startCollectionThumbReorder(event, ${index})"
+                                    onpointermove="App.moveCollectionThumbReorder(event, ${index})"
+                                    onpointerup="App.endCollectionThumbReorder(event, ${index})"
+                                    onpointercancel="App.cancelCollectionThumbReorder()"
+                                    aria-label="Фото ${index + 1}"
+                                  >
+                                    <img src="${image}" alt="Фото ${index + 1}" />
+                                  </button>
+                                `,
+                              )
+                              .join("")}
+                            ${
+                              collectionCreateDraft.images.length < 3
+                                ? `
+                                  <label class="collection-create-thumb collection-create-thumb-add" for="collectionCreateImage" aria-label="Додати ще фото">
+                                    ${navIcon("plus")}
+                                  </label>
+                                `
+                                : ""
+                            }
+                          </div>
+                        </div>
+                      `
+                      : ""
+                  }
+                </div>
+                <div class="wishlist-create-fields">
+                  <label class="field">
+                    Бренд
+                    <input name="brand" value="${escapeHtml(collectionCreateDraft.brand)}" autocomplete="off" oninput="App.updateCollectionDraftField('brand', this.value)" />
+                    <div data-collection-suggestions="brand" class="tag-composer__suggestions hidden"></div>
+                  </label>
+                  <label class="field">
+                    Колекція
+                    <input name="collectionName" value="${escapeHtml(collectionCreateDraft.collectionName)}" autocomplete="off" oninput="App.updateCollectionDraftField('collectionName', this.value)" />
+                    <div data-collection-suggestions="collectionName" class="tag-composer__suggestions hidden"></div>
+                  </label>
+                  <label class="field">
+                    Ім'я
+                    <input name="name" value="${escapeHtml(collectionCreateDraft.name)}" autocomplete="off" oninput="App.updateCollectionDraftField('name', this.value)" />
+                    <div data-collection-suggestions="name" class="tag-composer__suggestions hidden"></div>
+                  </label>
+                  <label class="field">
+                    Ціна покупки
+                    <input name="purchasePrice" inputmode="decimal" placeholder="120" value="${escapeHtml(collectionCreateDraft.purchasePrice)}" oninput="App.updateCollectionDraftField('purchasePrice', this.value.replace(/[^0-9.,]/g, ''))" />
+                  </label>
+                  <label class="field full">
+                    Memory
+                    <textarea name="memory" placeholder="Приємний спогад про цю ляльку, історія покупки, чому вона особлива..." oninput="App.updateCollectionDraftField('memory', this.value)">${escapeHtml(collectionCreateDraft.memory)}</textarea>
+                  </label>
+                </div>
+                <div class="collection-create-footer">
+                  <button class="ghost-button" type="button" onclick="App.closeCollectionCreate('${user.id}')">Отмена</button>
+                  <button class="button wishlist-create-submit ${collectionCreateReady() ? "" : "is-disabled"}" type="button" onclick="App.goToCollectionCreateStep(2)" ${collectionCreateReady() ? "" : "disabled"}>
+                    Следующий шаг
+                  </button>
+                </div>
+              `
+              : `
+                <div class="collection-step-layout">
+                  <div class="collection-step-card">
+                    ${renderCollectionChoiceField({
+                      label: "Статус",
+                      field: "status",
+                      value: collectionCreateDraft.status,
+                      options: COLLECTION_STATUS_OPTIONS,
+                    })}
+                    ${renderCollectionChoiceField({
+                      label: "Состояние",
+                      field: "condition",
+                      value: collectionCreateDraft.condition,
+                      options: COLLECTION_CONDITION_OPTIONS,
+                    })}
+                    ${renderCollectionChoiceField({
+                      label: "Комплектность",
+                      field: "completeness",
+                      value: collectionCreateDraft.completeness,
+                      options: COLLECTION_COMPLETENESS_OPTIONS,
+                    })}
+                    ${renderCollectionChoiceField({
+                      label: "Кастомизация",
+                      field: "customization",
+                      value: collectionCreateDraft.customization,
+                      options: COLLECTION_CUSTOMIZATION_OPTIONS,
+                    })}
+                  </div>
+                  <div class="collection-step-card">
+                    <label class="field">
+                      Дата покупки
+                      <input name="purchaseDate" type="date" value="${escapeHtml(collectionCreateDraft.purchaseDate)}" oninput="App.updateCollectionDraftField('purchaseDate', this.value)" />
+                    </label>
+                    <div class="collection-storage-block">
+                      <span class="collection-choice-label">Место хранения</span>
+                      <div class="collection-choice-select ${collectionStorageOpen ? "is-open" : ""}">
+                        <button class="collection-choice-trigger" type="button" onclick="App.toggleCollectionStorage()">
+                          <span>${escapeHtml(collectionStorageLabel())}</span>
+                        </button>
+                        <div class="collection-choice-options collection-storage-options ${collectionStorageOpen ? "is-open" : ""}">
+                          <label class="field">
+                            <span class="collection-storage-label">Комната</span>
+                            <input name="storageRoom" placeholder="Гостиная" value="${escapeHtml(collectionCreateDraft.storageRoom)}" oninput="App.updateCollectionDraftField('storageRoom', this.value)" />
+                          </label>
+                          <label class="field">
+                            <span class="collection-storage-label">Шкаф</span>
+                            <input name="storageCabinet" placeholder="Шкаф 2" value="${escapeHtml(collectionCreateDraft.storageCabinet)}" oninput="App.updateCollectionDraftField('storageCabinet', this.value)" />
+                          </label>
+                          <label class="field">
+                            <span class="collection-storage-label">Полка</span>
+                            <input name="storageShelf" placeholder="Полка B" value="${escapeHtml(collectionCreateDraft.storageShelf)}" oninput="App.updateCollectionDraftField('storageShelf', this.value)" />
+                          </label>
+                          <label class="field">
+                            <span class="collection-storage-label">Коробка</span>
+                            <input name="storageBox" placeholder="Box Winter" value="${escapeHtml(collectionCreateDraft.storageBox)}" oninput="App.updateCollectionDraftField('storageBox', this.value)" />
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                `
-                : ""
-            }
-          </div>
-          <div class="wishlist-create-fields">
-            <label class="field">
-              Бренд
-              <input name="brand" value="${escapeHtml(collectionCreateDraft.brand)}" autocomplete="off" oninput="App.updateCollectionDraftField('brand', this.value)" />
-              <div data-collection-suggestions="brand" class="tag-composer__suggestions hidden"></div>
-            </label>
-            <label class="field">
-              Колекція
-              <input name="collectionName" value="${escapeHtml(collectionCreateDraft.collectionName)}" autocomplete="off" oninput="App.updateCollectionDraftField('collectionName', this.value)" />
-              <div data-collection-suggestions="collectionName" class="tag-composer__suggestions hidden"></div>
-            </label>
-            <label class="field">
-              Ім'я
-              <input name="name" value="${escapeHtml(collectionCreateDraft.name)}" autocomplete="off" oninput="App.updateCollectionDraftField('name', this.value)" />
-              <div data-collection-suggestions="name" class="tag-composer__suggestions hidden"></div>
-            </label>
-            <label class="field">
-              Ціна покупки
-              <input name="purchasePrice" inputmode="decimal" placeholder="120" value="${escapeHtml(collectionCreateDraft.purchasePrice)}" oninput="App.updateCollectionDraftField('purchasePrice', this.value.replace(/[^0-9.,]/g, ''))" />
-            </label>
-            <label class="field full">
-              Memory
-              <textarea name="memory" placeholder="Приємний спогад про цю ляльку, історія покупки, чому вона особлива..." oninput="App.updateCollectionDraftField('memory', this.value)">${escapeHtml(collectionCreateDraft.memory)}</textarea>
-            </label>
-          </div>
-          <button class="button wishlist-create-submit ${collectionCreateReady() ? "" : "is-disabled"}" type="submit" ${collectionCreateReady() ? "" : "disabled"}>
-            Опублікувати
-          </button>
+                </div>
+                <div class="collection-create-footer">
+                  <button class="ghost-button" type="button" onclick="App.goToCollectionCreateStep(1)">Назад</button>
+                  <button class="button wishlist-create-submit ${collectionCreateReady() ? "" : "is-disabled"}" type="submit" ${collectionCreateReady() ? "" : "disabled"}>
+                    Опубликовать
+                  </button>
+                </div>
+              `
+          }
         </form>
       </section>
     </div>
@@ -2104,10 +2350,11 @@ function setMediaPreview(container, src, className, alt = "Медіа посту
 }
 
 function avatar(user, size = "") {
+  const toneClass = user?.isPremium ? "is-premium" : "is-default";
   if (user?.avatar) {
-    return `<span class="avatar ${size}"><img src="${user.avatar}" alt="${escapeHtml(user.nickname)}" /></span>`;
+    return `<span class="avatar ${size} ${toneClass}"><img src="${user.avatar}" alt="${escapeHtml(user.nickname)}" /></span>`;
   }
-  return `<span class="avatar ${size}">${escapeHtml(initials(user))}</span>`;
+  return `<span class="avatar ${size} ${toneClass}">${escapeHtml(initials(user))}</span>`;
 }
 
 function formatDate(value) {
@@ -2188,6 +2435,23 @@ function navIcon(name, badgeCount = 0) {
         <rect x="4.2" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
         <rect x="9.85" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
         <rect x="15.5" y="5.2" width="4.3" height="13.6" rx="1.5"></rect>
+      </svg>
+    `,
+    sort: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 7.2h12"></path>
+        <path d="M8.6 12h6.8"></path>
+        <path d="M11.2 16.8h1.6"></path>
+      </svg>
+    `,
+    filter: `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5.2 7.2h13.6"></path>
+        <circle cx="9" cy="7.2" r="1.5"></circle>
+        <path d="M5.2 12h13.6"></path>
+        <circle cx="15" cy="12" r="1.5"></circle>
+        <path d="M5.2 16.8h13.6"></path>
+        <circle cx="11.4" cy="16.8" r="1.5"></circle>
       </svg>
     `,
   };
@@ -2507,10 +2771,75 @@ function renderPostCard(post) {
   `;
 }
 
-function renderShelfCard(item, section = "collection", userId = "") {
+function renderCollectionActionToggle({ action, label, icon }) {
+  const isActive = currentProfileShelfAction() === action;
+  return `
+    <button
+      class="profile-shelf-action-toggle ${isActive ? "is-active" : ""}"
+      type="button"
+      onclick="App.toggleProfileShelfAction('${action}')"
+      aria-pressed="${isActive ? "true" : "false"}"
+      aria-label="${escapeHtml(label)}"
+    >
+      ${navIcon(icon)}
+      <span class="profile-shelf-action-label">${escapeHtml(label)}</span>
+    </button>
+  `;
+}
+
+function renderCollectionActionOptions({ options, value, action }) {
+  return `
+    <div class="profile-shelf-action-options">
+      ${options
+        .map(
+          (option) => `
+            <button
+              class="profile-shelf-toolbar-option ${option.value === value ? "is-active" : ""}"
+              type="button"
+              onclick="${action}('${option.value}')"
+            >
+              ${escapeHtml(option.label)}
+            </button>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderCollectionChoiceField({ label, field, value, options, summary, action = "App.updateCollectionDraftField" }) {
+  const isOpen = collectionChoiceOpenField === field;
+  return `
+    <div class="collection-choice-field">
+      <span class="collection-choice-label">${escapeHtml(label)}</span>
+      <div class="collection-choice-select ${isOpen ? "is-open" : ""}">
+        <button class="collection-choice-trigger" type="button" onclick="App.toggleCollectionChoiceField('${field}')">
+          <span>${escapeHtml(summary || optionLabel(options, value))}</span>
+        </button>
+        <div class="collection-choice-options ${isOpen ? "is-open" : ""}">
+          ${options
+            .map(
+              (option) => `
+                <button
+                  class="collection-choice-option ${option.value === value ? "is-active" : ""}"
+                  type="button"
+                  onclick="App.selectCollectionChoice('${field}', '${option.value}', '${action}')"
+                >
+                  ${escapeHtml(option.label)}
+                </button>
+              `,
+            )
+            .join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderShelfCard(item, section = "collection", userId = "", viewMode = "gallery") {
   const isWishlist = section === "wishlist";
   const cardMarkup = `
-    <article class="profile-shelf-card ${isWishlist ? "is-wishlist" : ""}">
+    <article class="profile-shelf-card ${isWishlist ? "is-wishlist" : ""} ${!isWishlist ? `is-${viewMode}` : ""}">
       <div class="profile-shelf-card-visual">
         <img src="${escapeHtml(item.image || shelfArtDataUrl(item))}" alt="${escapeHtml(item.name || "Doll card")}" />
         ${
@@ -2551,13 +2880,18 @@ function renderShelfPanel({ user, section, activeSection, items }) {
   const foundCount = (user.wishlistDolls || []).filter((item) => item.purchased).length;
   const waitingCount = Math.max(wishlistTotal - foundCount, 0);
   const shelfColumns = currentProfileShelfColumns();
+  const shelfSort = currentProfileShelfSort();
+  const shelfFilter = currentProfileShelfFilter();
   const headline = isWishlist ? "Wish List" : "Collection";
   const description = isWishlist
     ? "Те, що ще шукається, і те, що вже вдалося знайти."
     : "Спокійна вітрина профілю: тільки твоя колекція, без зайвого шуму.";
+  const visibleItems = isWishlist
+    ? items
+    : sortCollectionItems(items.filter((item) => collectionMatchesFilter(item, shelfFilter)), shelfSort);
   const summary = isWishlist
     ? `${foundCount} з ${wishlistTotal} знайдено`
-    : `${items.length} на полці`;
+    : `${visibleItems.length} на полці`;
   return `
     <section class="profile-shelf-panel ${activeSection === section ? "is-active" : ""}" aria-label="${headline}">
       <div class="profile-shelf-panel-head">
@@ -2574,7 +2908,7 @@ function renderShelfPanel({ user, section, activeSection, items }) {
       </div>
       <div class="profile-shelf-panel-actions">
         ${isWishlist ? `<span class="profile-shelf-panel-count">${escapeHtml(summary)}</span>` : ""}
-        <div class="profile-shelf-layout-switch" aria-label="Щільність сітки">
+        <div class="profile-shelf-controls" aria-label="Вид сетки">
           ${PROFILE_SHELF_COLUMN_OPTIONS.map(
             (columns) => `
               <button
@@ -2589,7 +2923,36 @@ function renderShelfPanel({ user, section, activeSection, items }) {
             `,
           ).join("")}
         </div>
+        ${
+          !isWishlist
+            ? `
+              ${renderCollectionActionToggle({ action: "sort", label: "Сортировка", icon: "sort" })}
+              ${renderCollectionActionToggle({ action: "filter", label: "Фильтр", icon: "filter" })}
+            `
+            : ""
+        }
       </div>
+      ${
+        !isWishlist && currentProfileShelfAction()
+          ? `
+            <div class="profile-shelf-toolbar">
+              ${
+                currentProfileShelfAction() === "sort"
+                  ? renderCollectionActionOptions({
+                      value: shelfSort,
+                      options: PROFILE_SHELF_SORT_OPTIONS,
+                      action: "App.setProfileShelfSort",
+                    })
+                  : renderCollectionActionOptions({
+                      value: shelfFilter,
+                      options: PROFILE_SHELF_FILTER_OPTIONS,
+                      action: "App.setProfileShelfFilter",
+                    })
+              }
+            </div>
+          `
+          : ""
+      }
       ${
         isWishlist
           ? `
@@ -2603,9 +2966,17 @@ function renderShelfPanel({ user, section, activeSection, items }) {
           : ``
       }
       ${
-        items.length
-          ? `<div class="profile-shelf-grid" style="--mobile-shelf-columns:${shelfColumns}">${items.map((item) => renderShelfCard(item, section, user.id)).join("")}</div>`
-          : emptyState(isWishlist ? "Wish List ще порожній." : "Колекція ще не заповнена.")
+        visibleItems.length
+          ? `<div class="profile-shelf-grid is-${isWishlist ? "wishlist" : "gallery"}" style="--mobile-shelf-columns:${shelfColumns}">${visibleItems
+              .map((item) => renderShelfCard(item, section, user.id, "gallery"))
+              .join("")}</div>`
+          : emptyState(
+              isWishlist
+                ? "Wish List ще порожній."
+                : items.length
+                  ? "За цим фільтром поки нічого не знайдено."
+                  : "Колекція ще не заповнена.",
+            )
       }
     </section>
   `;
@@ -2613,6 +2984,18 @@ function renderShelfPanel({ user, section, activeSection, items }) {
 
 function setProfileShelfColumns(columns) {
   state.profileShelfColumns = normalizeProfileShelfColumns(columns);
+  saveState();
+  render();
+}
+
+function setProfileShelfSort(value) {
+  state.profileShelfSort = normalizeProfileShelfSort(value);
+  saveState();
+  render();
+}
+
+function setProfileShelfFilter(value) {
+  state.profileShelfFilter = normalizeProfileShelfFilter(value);
   saveState();
   render();
 }
@@ -2668,6 +3051,34 @@ function updateCollectionDraftField(field, value) {
     submit.disabled = !collectionCreateReady();
     submit.classList.toggle("is-disabled", !collectionCreateReady());
   }
+}
+
+function goToCollectionCreateStep(step) {
+  const nextStep = Math.max(1, Math.min(2, Number(step) || 1));
+  if (nextStep === 2 && !collectionCreateReady()) return;
+  collectionChoiceOpenField = "";
+  collectionStorageOpen = false;
+  collectionCreateStep = nextStep;
+  render();
+}
+
+function toggleCollectionChoiceField(field) {
+  collectionChoiceOpenField = collectionChoiceOpenField === field ? "" : String(field || "");
+  render();
+}
+
+function selectCollectionChoice(field, value, action = "App.updateCollectionDraftField") {
+  const handler = String(action || "");
+  if (handler === "App.updateCollectionDraftField") {
+    updateCollectionDraftField(field, value);
+  }
+  collectionChoiceOpenField = "";
+  render();
+}
+
+function toggleCollectionStorage() {
+  collectionStorageOpen = !collectionStorageOpen;
+  render();
 }
 
 function applyWishlistSuggestion(field, value) {
@@ -2868,6 +3279,9 @@ function publishCollectionItem(event, userId) {
   user.collectionDolls = [nextItem, ...(user.collectionDolls || [])];
   saveState();
   collectionCreateDraft = emptyCollectionDraft();
+  collectionCreateStep = 1;
+  collectionChoiceOpenField = "";
+  collectionStorageOpen = false;
   routeTo(profileShelfHref(userId, "collection"));
 }
 
@@ -2908,17 +3322,17 @@ function renderProfile(id, section = "collection", activeWishId = "", createMode
               : `<button class="profile-plus" onclick="App.toggleFollow('${user.id}')" aria-label="${isFollowing ? "Відписатися" : "Підписатися"}">${isFollowing ? "✓" : "+"}</button>`
           }
         </div>
-        <div class="profile-avatar-wrap">${avatar(user, "large")}</div>
+        <div class="profile-avatar-wrap ${user.isPremium ? "is-premium" : "is-default"}">${avatar(user, "large")}</div>
         <div class="profile-card-body">
           <p class="profile-location">${escapeHtml(location || "Колекціонер")}</p>
           <h1>${escapeHtml(user.nickname)}</h1>
           <p class="profile-bio">${escapeHtml(user.bio || "Поки без опису.")}</p>
           <p class="profile-collector-signal">${escapeHtml(shelfStatus)}</p>
           <div class="stats profile-stats">
-            <span class="stat"><strong>${collectionDolls.length}</strong><span class="muted">Collection</span></span>
-            <span class="stat"><strong>${wishlistDolls.length}</strong><span class="muted">Wish List</span></span>
-            <span class="stat"><strong>${foundWishlist}</strong><span class="muted">Found</span></span>
-            <span class="stat"><strong>${user.followers.length}</strong><span class="muted">Followers</span></span>
+            <span class="stat"><strong>${collectionDolls.length}</strong><span class="muted">На полке</span></span>
+            <span class="stat"><strong>${wishlistDolls.length}</strong><span class="muted">В wishlist</span></span>
+            <span class="stat"><strong>${foundWishlist}</strong><span class="muted">Найдено</span></span>
+            <span class="stat"><strong>${user.followers.length}</strong><span class="muted">Подписчики</span></span>
           </div>
           <div class="profile-socials">
             ${profileSocialLinks(user)}
@@ -4925,6 +5339,12 @@ window.App = {
   closeCollectionCreate,
   closeWishlistCreate,
   setProfileShelfColumns,
+  setProfileShelfSort,
+  setProfileShelfFilter,
+  toggleProfileShelfAction,
+  toggleCollectionChoiceField,
+  selectCollectionChoice,
+  toggleCollectionStorage,
   previewCreateMedia,
   pickWishlistImage,
   pickCollectionImages,
@@ -4938,6 +5358,7 @@ window.App = {
   cancelCollectionThumbReorder,
   updateWishlistDraftField,
   updateCollectionDraftField,
+  goToCollectionCreateStep,
   applyWishlistSuggestion,
   applyCollectionSuggestion,
   toggleWishlistCondition,
